@@ -1,6 +1,6 @@
-import React from "react";
-import { cn } from "@/utils/cn";
+import React, { useState } from "react";
 import ApperIcon from "@/components/ApperIcon";
+import { cn } from "@/utils/cn";
 
 const ApplicationStatusPipeline = ({ 
   currentStatus, 
@@ -10,6 +10,7 @@ const ApplicationStatusPipeline = ({
   onInterviewSchedule,
   className 
 }) => {
+  const [isUpdating, setIsUpdating] = useState(false);
   const statusStages = [
     {
       key: 'applied',
@@ -61,11 +62,18 @@ const ApplicationStatusPipeline = ({
     }
   ];
 
-  const currentStageIndex = statusStages.findIndex(stage => stage.key === currentStatus);
+const currentStageIndex = statusStages.findIndex(stage => stage.key === currentStatus);
   
-const handleStatusUpdate = async (newStatus) => {
+  const handleStatusUpdate = async (newStatus) => {
     if (onStatusChange && applicationId) {
-      await onStatusChange(applicationId, newStatus);
+      setIsUpdating(true);
+      try {
+        await onStatusChange(applicationId, newStatus);
+      } catch (error) {
+        console.error('Failed to update status:', error);
+      } finally {
+        setIsUpdating(false);
+      }
     }
   };
 
@@ -137,7 +145,7 @@ const handleStatusUpdate = async (newStatus) => {
         })}
       </div>
 {/* Status Update Dropdown */}
-      {showUpdateDropdown && onStatusChange && applicationId && (
+{showUpdateDropdown && onStatusChange && applicationId && (
         <div className="pt-2 border-t">
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Update Status
@@ -145,7 +153,8 @@ const handleStatusUpdate = async (newStatus) => {
           <select
             value={currentStatus}
             onChange={(e) => handleStatusUpdate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            disabled={isUpdating}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
             {statusStages.map(stage => (
               <option key={stage.key} value={stage.key}>
@@ -153,6 +162,13 @@ const handleStatusUpdate = async (newStatus) => {
               </option>
             ))}
           </select>
+          
+          {isUpdating && (
+            <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-500 border-t-transparent"></div>
+              Updating status...
+            </div>
+          )}
           
           {/* Interview Scheduling Trigger */}
           {currentStatus === 'interview_scheduled' && onInterviewSchedule && (

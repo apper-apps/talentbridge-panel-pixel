@@ -84,16 +84,16 @@ setError(null)
 }
 async function handleStatusChange(applicationId, newStatus) {
     try {
-      await applicationService.updateStatus(applicationId, newStatus)
+      await applicationService.updateStatus(applicationId, newStatus);
       
       // Reload applications to get updated data
-      const updatedApplications = await applicationService.getAll()
-      setApplications(updatedApplications)
+      const updatedApplications = await applicationService.getAll();
+      setApplications(updatedApplications);
       
-      toast.success('Application status updated successfully!')
+      toast.success('Application status updated successfully!');
     } catch (error) {
-      toast.error(error.message || 'Failed to update application status')
-      console.error('Failed to update application status:', error)
+      toast.error(error.message || 'Failed to update application status');
+      console.error('Failed to update application status:', error);
     }
   }
 
