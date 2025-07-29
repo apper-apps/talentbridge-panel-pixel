@@ -1,6 +1,6 @@
 import "@/index.css";
 import React, { createContext, useEffect, useState } from "react";
-import { Route, Router, Routes, useNavigate } from "react-router-dom";
+import { Route, BrowserRouter, Routes, useNavigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import Layout from "@/components/organisms/Layout";
@@ -151,10 +151,10 @@ function AppContent() {
 
 function MainApp() {
   return (
-    <Provider store={store}>
-      <Router>
+<Provider store={store}>
+      <BrowserRouter>
         <AppContent />
-      </Router>
+      </BrowserRouter>
     </Provider>
   );
 }
