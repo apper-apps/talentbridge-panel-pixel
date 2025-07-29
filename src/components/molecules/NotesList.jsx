@@ -55,14 +55,17 @@ const NotesList = ({ entityType, entityId, entityName }) => {
     setIsNotesModalOpen(true);
   };
 
-  const handleSaveNote = async (noteData) => {
+const handleSaveNote = async (noteData) => {
     try {
       if (editingNote) {
         await noteService.update(editingNote.Id, noteData);
+        toast.success("Note updated successfully!");
       } else {
         await noteService.create(noteData);
+        toast.success("Note added successfully!");
       }
       await loadNotes();
+      setIsNotesModalOpen(false);
     } catch (error) {
       console.error("Error saving note:", error);
       throw error;

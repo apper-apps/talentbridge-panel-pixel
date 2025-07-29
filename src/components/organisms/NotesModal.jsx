@@ -79,11 +79,9 @@ const handleSubmit = async (e) => {
         ...formData,
         entityType,
         entityId
-      };
+};
       
       await onSave(noteData);
-      toast.success(note ? "Note updated successfully!" : "Note added successfully!");
-      onClose();
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
     } finally {
