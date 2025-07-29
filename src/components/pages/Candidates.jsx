@@ -133,6 +133,17 @@ async function handleStatusChange(applicationId, newStatus) {
     }
   }
 
+const getCandidateApplications = (candidateId) => {
+    const candidateApplications = applications.filter(app => app.candidateId === candidateId)
+    return candidateApplications.map(app => {
+      const job = jobs.find(job => job.Id === app.jobId)
+      return {
+        ...app,
+        jobTitle: job?.title || 'Unknown Position'
+      }
+    })
+  }
+
   const getAppliedJobsForCandidate = (candidateId) => {
     const candidateApplications = applications.filter(app => app.candidateId === candidateId)
     return candidateApplications.map(app => 
@@ -269,7 +280,7 @@ Add Candidate
         onClose={() => setIsModalOpen(false)}
         candidate={selectedCandidate}
         mode={modalMode}
-        candidateApplications={selectedCandidate ? getAppliedJobsForCandidate(selectedCandidate.Id) : []}
+        candidateApplications={selectedCandidate ? getCandidateApplications(selectedCandidate.Id) : []}
         onApplicationUpdate={handleApplicationUpdate}
         onStatusChange={handleStatusChange}
       />
