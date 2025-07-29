@@ -86,23 +86,18 @@ function handleViewCandidate(candidate) {
     } catch (error) {
       toast.error(error.message || 'Failed to add candidate')
       throw error
-    }
 }
-async function handleStatusChange(applicationId, newStatus) {
-try {
-      if (modalMode === 'edit') {
-        await candidateService.update(selectedCandidate.Id, candidateData);
-        await loadCandidates(); // Reload candidates list
-        toast.success('Candidate updated successfully!');
-      } else {
-        await applicationService.updateStatus(applicationId, newStatus);
-        
-        // Reload applications to get updated data
-        const updatedApplications = await applicationService.getAll();
-        setApplications(updatedApplications);
-        
-        toast.success('Application status updated successfully!');
-      }
+  }
+
+  async function handleStatusChange(applicationId, newStatus) {
+    try {
+      await applicationService.updateStatus(applicationId, newStatus);
+      
+      // Reload applications to get updated data
+      const updatedApplications = await applicationService.getAll();
+      setApplications(updatedApplications);
+      
+      toast.success('Application status updated successfully!');
     } catch (error) {
       toast.error(error.message || 'Failed to update application status');
       console.error('Failed to update application status:', error);
