@@ -42,13 +42,19 @@ async function loadJobs() {
         clientService.getAll()
       ])
       
-      setJobs(jobsData)
-      setCandidates(candidatesData)
-      setApplications(applicationsData)
-      setClients(clientsData)
+      // Handle empty data gracefully
+      setJobs(jobsData || [])
+      setCandidates(candidatesData || [])
+      setApplications(applicationsData || [])
+      setClients(clientsData || [])
     } catch (err) {
       setError('Failed to load jobs. Please try again.')
-      console.error('Error loading jobs:', err)
+      console.error('Error loading jobs:', err.message)
+      // Set empty arrays on error
+      setJobs([])
+      setCandidates([])
+      setApplications([])
+      setClients([])
     } finally {
       setLoading(false)
     }
@@ -90,14 +96,18 @@ async function handleSaveJob(jobData) {
       
       if (editingJob) {
         const updatedJob = await jobService.update(editingJob.Id, jobWithClient)
-        setJobs(prev => prev.map(job => 
-          job.Id === editingJob.Id ? updatedJob : job
-        ))
-        toast.success('Job updated successfully!')
+        if (updatedJob) {
+          setJobs(prev => prev.map(job => 
+            job.Id === editingJob.Id ? updatedJob : job
+          ))
+          toast.success('Job updated successfully!')
+        }
       } else {
         const newJob = await jobService.create(jobWithClient)
-        setJobs(prev => [newJob, ...prev])
-        toast.success('Job created successfully!')
+        if (newJob) {
+          setJobs(prev => [newJob, ...prev])
+          toast.success('Job created successfully!')
+        }
       }
       setIsModalOpen(false)
       setEditingJob(null)

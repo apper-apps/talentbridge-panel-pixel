@@ -38,9 +38,9 @@ const [modalMode, setModalMode] = useState('add')
     loadCandidates()
   }, [])
 
-  async function loadCandidates() {
+async function loadCandidates() {
     setLoading(true)
-setError(null)
+    setError(null)
     
     try {
       const [candidatesData, jobsData, applicationsData] = await Promise.all([
@@ -49,16 +49,21 @@ setError(null)
         applicationService.getAll()
       ])
       
-      setCandidates(candidatesData)
-      setJobs(jobsData)
-      setApplications(applicationsData)
+      // Handle empty data gracefully
+      setCandidates(candidatesData || [])
+      setJobs(jobsData || [])
+      setApplications(applicationsData || [])
     } catch (err) {
       setError('Failed to load candidates. Please try again.')
-      console.error('Failed to load candidates:', err)
+      console.error('Failed to load candidates:', err.message)
+      // Set empty arrays on error
+      setCandidates([])
+      setJobs([])
+      setApplications([])
     } finally {
       setLoading(false)
     }
-}
+  }
 
 function handleViewCandidate(candidate) {
     setSelectedCandidate(candidate)
@@ -78,17 +83,18 @@ function handleViewCandidate(candidate) {
     // In a real app, this might open email client or phone dialer
   }
 
-  async function handleAddCandidate(candidateData) {
+async function handleAddCandidate(candidateData) {
     try {
       const newCandidate = await candidateService.create(candidateData)
-      setCandidates(prev => [newCandidate, ...prev])
-      toast.success('Candidate added successfully!')
+      if (newCandidate) {
+        setCandidates(prev => [newCandidate, ...prev])
+        toast.success('Candidate added successfully!')
+      }
     } catch (error) {
       toast.error(error.message || 'Failed to add candidate')
       throw error
-}
+    }
   }
-
   async function handleStatusChange(applicationId, newStatus) {
     try {
       await applicationService.updateStatus(applicationId, newStatus);
@@ -125,18 +131,20 @@ function handleViewCandidate(candidate) {
     return 'new';
   }
 
-  async function handleApplicationUpdate(applicationId, updates) {
+async function handleApplicationUpdate(applicationId, updates) {
     try {
-      await applicationService.update(applicationId, updates)
+      const updated = await applicationService.update(applicationId, updates)
       
-      // Reload applications to get updated data
-      const updatedApplications = await applicationService.getAll()
-      setApplications(updatedApplications)
-      
-      toast.success('Application updated successfully!')
+      if (updated) {
+        // Reload applications to get updated data
+        const updatedApplications = await applicationService.getAll()
+        setApplications(updatedApplications || [])
+        
+        toast.success('Application updated successfully!')
+      }
     } catch (error) {
       toast.error(error.message || 'Failed to update application')
-      console.error('Failed to update application:', error)
+      console.error('Failed to update application:', error.message)
     }
   }
 

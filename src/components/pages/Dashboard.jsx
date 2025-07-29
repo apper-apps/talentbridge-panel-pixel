@@ -23,8 +23,8 @@ activeJobs: 0,
   const [upcomingInterviews, setUpcomingInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const loadDashboardData = async () => {
-try {
+const loadDashboardData = async () => {
+    try {
       setLoading(true);
       setError("");
       
@@ -34,9 +34,14 @@ try {
         applicationService.getUpcomingInterviews()
       ]);
 
+      // Handle empty data gracefully
+      const jobsArray = jobs || [];
+      const candidatesArray = candidates || [];
+      const interviewsArray = interviews || [];
+
       // Calculate metrics
-      const activeJobs = jobs.filter(job => job.status === "active").length;
-      const newCandidates = candidates.filter(candidate => {
+      const activeJobs = jobsArray.filter(job => job.status === "active").length;
+      const newCandidates = candidatesArray.filter(candidate => {
         const appliedDate = new Date(candidate.appliedAt);
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
@@ -44,23 +49,29 @@ try {
       }).length;
 
       setMetrics({
-        totalJobs: jobs.length,
-        totalCandidates: candidates.length,
+        totalJobs: jobsArray.length,
+        totalCandidates: candidatesArray.length,
         activeJobs,
         newCandidates
       });
 
       // Get recent data
-      setRecentJobs(jobs.slice(0, 5));
-      setRecentCandidates(candidates.slice(0, 5));
-      setUpcomingInterviews(interviews.slice(0, 5));
+      setRecentJobs(jobsArray.slice(0, 5));
+      setRecentCandidates(candidatesArray.slice(0, 5));
+      setUpcomingInterviews(interviewsArray.slice(0, 5));
 
     } catch (err) {
+      console.error("Error loading dashboard data:", err.message);
       setError(err.message || "Failed to load dashboard data");
+      // Set empty arrays on error
+      setRecentJobs([]);
+      setRecentCandidates([]);
+      setUpcomingInterviews([]);
     } finally {
       setLoading(false);
     }
   };
+  
   useEffect(() => {
     loadDashboardData();
   }, []);

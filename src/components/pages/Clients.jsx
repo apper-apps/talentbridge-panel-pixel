@@ -24,16 +24,18 @@ function Clients() {
     loadClients()
   }, [])
 
-  async function loadClients() {
+async function loadClients() {
     setLoading(true)
     setError(null)
     
     try {
       const clientsData = await clientService.getAll()
-      setClients(clientsData)
+      setClients(clientsData || [])
     } catch (err) {
       setError('Failed to load clients. Please try again.')
-      console.error('Error loading clients:', err)
+      console.error('Error loading clients:', err.message)
+      // Set empty array on error
+      setClients([])
     } finally {
       setLoading(false)
     }
@@ -49,18 +51,22 @@ function Clients() {
     setIsModalOpen(true)
   }
 
-  async function handleSaveClient(clientData) {
+async function handleSaveClient(clientData) {
     try {
       if (editingClient) {
         const updatedClient = await clientService.update(editingClient.Id, clientData)
-        setClients(prev => prev.map(client => 
-          client.Id === editingClient.Id ? updatedClient : client
-        ))
-        toast.success('Client updated successfully!')
+        if (updatedClient) {
+          setClients(prev => prev.map(client => 
+            client.Id === editingClient.Id ? updatedClient : client
+          ))
+          toast.success('Client updated successfully!')
+        }
       } else {
         const newClient = await clientService.create(clientData)
-        setClients(prev => [newClient, ...prev])
-        toast.success('Client created successfully!')
+        if (newClient) {
+          setClients(prev => [newClient, ...prev])
+          toast.success('Client created successfully!')
+        }
       }
       setIsModalOpen(false)
       setEditingClient(null)
@@ -69,15 +75,17 @@ function Clients() {
     }
   }
 
-  async function handleDeleteClient(client) {
+async function handleDeleteClient(client) {
     if (window.confirm(`Are you sure you want to delete ${client.companyName}?`)) {
       try {
-        await clientService.delete(client.Id)
-        setClients(prev => prev.filter(c => c.Id !== client.Id))
-        toast.success('Client deleted successfully!')
+        const success = await clientService.delete(client.Id)
+        if (success) {
+          setClients(prev => prev.filter(c => c.Id !== client.Id))
+          toast.success('Client deleted successfully!')
+        }
       } catch (error) {
         toast.error('Failed to delete client. Please try again.')
-        console.error('Error deleting client:', error)
+        console.error('Error deleting client:', error.message)
       }
     }
   }
