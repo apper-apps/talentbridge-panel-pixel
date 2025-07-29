@@ -1,0 +1,82 @@
+[
+  {
+    "Id": 1,
+    "name": "Sarah Johnson",
+    "email": "sarah.johnson@email.com",
+    "position": "Software Engineer",
+    "status": "new",
+    "appliedAt": "2024-01-16T10:30:00Z",
+    "experience": "5 years",
+    "skills": ["React", "Node.js", "TypeScript", "AWS"]
+  },
+  {
+    "Id": 2,
+    "name": "Michael Chen",
+    "email": "michael.chen@email.com",
+    "position": "Product Manager",
+    "status": "interviewed",
+    "appliedAt": "2024-01-15T14:20:00Z",
+    "experience": "7 years",
+    "skills": ["Product Strategy", "Agile", "Data Analysis", "Stakeholder Management"]
+  },
+  {
+    "Id": 3,
+    "name": "Emily Rodriguez",
+    "email": "emily.rodriguez@email.com",
+    "position": "UX Designer",
+    "status": "hired",
+    "appliedAt": "2024-01-14T09:15:00Z",
+    "experience": "4 years",
+    "skills": ["Figma", "User Research", "Prototyping", "Design Systems"]
+  },
+  {
+    "Id": 4,
+    "name": "David Thompson",
+    "email": "david.thompson@email.com",
+    "position": "DevOps Engineer",
+    "status": "new",
+    "appliedAt": "2024-01-13T16:45:00Z",
+    "experience": "6 years",
+    "skills": ["Docker", "Kubernetes", "AWS", "Terraform"]
+  },
+  {
+    "Id": 5,
+    "name": "Lisa Wang",
+    "email": "lisa.wang@email.com",
+    "position": "Data Scientist",
+    "status": "interviewed",
+    "appliedAt": "2024-01-12T11:30:00Z",
+    "experience": "3 years",
+    "skills": ["Python", "Machine Learning", "SQL", "Tableau"]
+  },
+  {
+    "Id": 6,
+    "name": "James Wilson",
+    "email": "james.wilson@email.com",
+    "position": "Marketing Specialist",
+    "status": "rejected",
+    "appliedAt": "2024-01-11T13:20:00Z",
+    "experience": "2 years",
+    "skills": ["Content Marketing", "SEO", "Google Analytics", "Social Media"]
+  },
+  {
+    "Id": 7,
+    "name": "Maria Garcia",
+    "email": "maria.garcia@email.com",
+    "position": "Frontend Developer",
+    "status": "new",
+    "appliedAt": "2024-01-10T15:10:00Z",
+    "experience": "4 years",
+    "skills": ["Vue.js", "CSS", "JavaScript", "Responsive Design"]
+  },
+  {
+    "Id": 8,
+    "name": "Robert Kim",
+    "email": "robert.kim@email.com",
+    "position": "Backend Developer",
+    "status": "interviewed",
+    "appliedAt": "2024-01-09T12:45:00Z",
+    "experience": "5 years",
+    "skills": ["Java", "Spring Boot", "PostgreSQL", "Microservices"]
+  }
+]
