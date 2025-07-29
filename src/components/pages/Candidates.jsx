@@ -167,15 +167,23 @@ Add Candidate
       ) : (
 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCandidates.map((candidate) => (
-            <CandidateCard
+<CandidateCard
               key={candidate.Id}
               candidate={candidate}
               onView={handleViewCandidate}
               onContact={handleContactCandidate}
             />
           ))}
-</div>
+        </div>
       )}
+
+      {/* Add Candidate Modal */}
+      <CandidateProfileModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleAddCandidate}
+        mode="add"
+      />
     </div>
   );
 };
