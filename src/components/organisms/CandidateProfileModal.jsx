@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
+import { applicationService } from "@/services/api/applicationService";
 import ApperIcon from "@/components/ApperIcon";
 import ApplicationStatusPipeline from "@/components/molecules/ApplicationStatusPipeline";
-import InterviewSchedulingModal from "@/components/organisms/InterviewSchedulingModal";
+import NotesList from "@/components/molecules/NotesList";
 import FormField from "@/components/molecules/FormField";
+import InterviewSchedulingModal from "@/components/organisms/InterviewSchedulingModal";
 import Textarea from "@/components/atoms/Textarea";
 import Badge from "@/components/atoms/Badge";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
-import NotesList from "@/components/molecules/NotesList";
-import { applicationService } from "@/services/api/applicationService";
 const CandidateProfileModal = ({ 
   isOpen, 
   onClose, 
@@ -473,16 +473,18 @@ application => <div key={application.Id} className="border border-gray-200 round
                 <Button type="button" variant="ghost" onClick={onClose}>
                     {mode === "view" ? "Close" : "Cancel"}
                 </Button>
-                {(mode === "add" || mode === "edit") && <Button
+                {(mode === "add" || mode === "edit") && (
+                <Button
+                    variant="primary"
                     type="submit"
-                    onClick={handleSubmit}
                     disabled={isSubmitting}
                     className="flex items-center gap-2">
                     {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
                     {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
-                </Button>}
+                </Button>
+                )}
+              </div>
             </div>
-        </motion.div>
 
         {/* Interview Scheduling Modal */}
         <InterviewSchedulingModal
