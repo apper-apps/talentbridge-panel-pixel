@@ -174,9 +174,8 @@ job.description.toLowerCase().includes(searchLower)
               appliedCandidates={getAppliedCandidatesForJob(job.Id)}
             />
           ))}
-        </div>
+</div>
       )}
-    </div>
 
       <JobModal
         isOpen={isModalOpen}
@@ -185,7 +184,7 @@ job.description.toLowerCase().includes(searchLower)
         job={editingJob}
       />
 
-<ApplyCandidateModal
+      <ApplyCandidateModal
         isOpen={isApplyModalOpen}
         onClose={() => setIsApplyModalOpen(false)}
         job={selectedJob}
