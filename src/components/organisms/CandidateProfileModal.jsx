@@ -399,9 +399,9 @@ const getAvailabilityDisplay = (availability) => {
                                 error={errors.resumeSummary}
                                 disabled={mode === "view"} />
                         </FormField>
-                    </div>
-                    {/* Status Display for View Mode */}
-                    {mode === "view" && candidate && <div>
+</div>
+                    {/* Application Status Management */}
+                    {(mode === "view" || mode === "edit") && candidate && <div>
                         <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Application Status
                                               </h3>
                         <div className="flex items-center gap-4 mb-6">
