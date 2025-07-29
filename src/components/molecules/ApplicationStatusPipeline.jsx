@@ -63,9 +63,9 @@ const ApplicationStatusPipeline = ({
 
   const currentStageIndex = statusStages.findIndex(stage => stage.key === currentStatus);
   
-  const handleStatusUpdate = (newStatus) => {
+const handleStatusUpdate = async (newStatus) => {
     if (onStatusChange && applicationId) {
-      onStatusChange(applicationId, newStatus);
+      await onStatusChange(applicationId, newStatus);
     }
   };
 

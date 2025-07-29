@@ -80,7 +80,7 @@ const newApplication = {
   },
 
   // Update application status
-  async updateStatus(applicationId, newStatus) {
+async updateStatus(applicationId, newStatus) {
     await delay(300);
     
     const validStatuses = ['applied', 'screening', 'interview_scheduled', 'final_review', 'hired', 'rejected'];
@@ -94,6 +94,7 @@ const newApplication = {
     }
 
     applications[applicationIndex].status = newStatus;
+    applications[applicationIndex].updatedAt = new Date().toISOString();
     return { ...applications[applicationIndex] };
   },
 

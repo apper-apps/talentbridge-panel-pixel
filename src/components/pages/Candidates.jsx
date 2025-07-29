@@ -82,6 +82,20 @@ setError(null)
       throw error
     }
 }
+async function handleStatusChange(applicationId, newStatus) {
+    try {
+      await applicationService.updateStatus(applicationId, newStatus)
+      
+      // Reload applications to get updated data
+      const updatedApplications = await applicationService.getAll()
+      setApplications(updatedApplications)
+      
+      toast.success('Application status updated successfully!')
+    } catch (error) {
+      toast.error(error.message || 'Failed to update application status')
+      console.error('Failed to update application status:', error)
+    }
+  }
 
   async function handleApplicationUpdate(applicationId, updates) {
     try {
@@ -97,6 +111,7 @@ setError(null)
       console.error('Failed to update application:', error)
     }
   }
+
   const getAppliedJobsForCandidate = (candidateId) => {
     const candidateApplications = applications.filter(app => app.candidateId === candidateId)
     return candidateApplications.map(app => 
@@ -226,13 +241,14 @@ Add Candidate
       )}
 
 {/* View Candidate Modal */}
-      <CandidateProfileModal
+<CandidateProfileModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         candidate={selectedCandidate}
         mode={modalMode}
         candidateApplications={selectedCandidate ? getAppliedJobsForCandidate(selectedCandidate.Id) : []}
         onApplicationUpdate={handleApplicationUpdate}
+        onStatusChange={handleStatusChange}
       />
 
       {/* Add Candidate Modal */}

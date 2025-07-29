@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Button from "@/components/atoms/Button";
-import Input from "@/components/atoms/Input";
-import Textarea from "@/components/atoms/Textarea";
-import FormField from "@/components/molecules/FormField";
-import ApperIcon from "@/components/ApperIcon";
-import Badge from "@/components/atoms/Badge";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import ApplicationStatusPipeline from "@/components/molecules/ApplicationStatusPipeline";
+import FormField from "@/components/molecules/FormField";
+import Textarea from "@/components/atoms/Textarea";
+import Badge from "@/components/atoms/Badge";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
 
 const CandidateProfileModal = ({ 
   isOpen, 
   onClose, 
   onSave, 
   candidate = null, 
-  mode = "add" // "add" or "view"
+  mode = "add", // "add" or "view"
+  candidateApplications = [],
+  onApplicationUpdate,
+  onStatusChange
 }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -200,267 +204,241 @@ const CandidateProfileModal = ({
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
+    <motion.div
+        initial={{
+            opacity: 0
+        }}
+        animate={{
+            opacity: 1
+        }}
+        exit={{
+            opacity: 0
+        }}
         className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-        onClick={onClose}
-      >
+        onClick={onClose}>
         <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex items-center justify-between p-6 border-b">
-            <div>
-              <h2 className="text-2xl font-bold font-display text-gray-900">
-                {mode === "add" ? "Add New Candidate" : "Candidate Profile"}
-              </h2>
-              <p className="text-gray-600 mt-1">
-                {mode === "add" 
-                  ? "Create a detailed candidate profile" 
-                  : "View and manage candidate information"
-                }
-              </p>
-            </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <ApperIcon name="X" size={24} />
-            </button>
-          </div>
-
-          <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              {/* Basic Information */}
-              <div>
-                <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">
-                  Basic Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField label="Full Name" required error={errors.name}>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) => handleInputChange("name", e.target.value)}
-                      placeholder="Enter full name"
-                      error={errors.name}
-                      disabled={mode === "view"}
-                    />
-                  </FormField>
-
-                  <FormField label="Email" required error={errors.email}>
-                    <Input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
-                      placeholder="Enter email address"
-                      error={errors.email}
-                      disabled={mode === "view"}
-                    />
-                  </FormField>
-
-                  <FormField label="Phone" required error={errors.phone}>
-                    <Input
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange("phone", e.target.value)}
-                      placeholder="Enter phone number"
-                      error={errors.phone}
-                      disabled={mode === "view"}
-                    />
-                  </FormField>
-
-                  <FormField label="Location" required error={errors.location}>
-                    <Input
-                      value={formData.location}
-                      onChange={(e) => handleInputChange("location", e.target.value)}
-                      placeholder="City, State/Country"
-                      error={errors.location}
-                      disabled={mode === "view"}
-                    />
-                  </FormField>
-                </div>
-              </div>
-
-              {/* Professional Information */}
-              <div>
-                <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">
-                  Professional Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField label="Current Job Title" required error={errors.currentJobTitle}>
-                    <Input
-                      value={formData.currentJobTitle}
-                      onChange={(e) => handleInputChange("currentJobTitle", e.target.value)}
-                      placeholder="Current position"
-                      error={errors.currentJobTitle}
-                      disabled={mode === "view"}
-                    />
-                  </FormField>
-
-                  <FormField label="Position Applying For" required error={errors.position}>
-                    <Input
-                      value={formData.position}
-                      onChange={(e) => handleInputChange("position", e.target.value)}
-                      placeholder="Desired position"
-                      error={errors.position}
-                      disabled={mode === "view"}
-                    />
-                  </FormField>
-
-                  <FormField label="Experience Level" required>
-                    <select
-                      value={formData.experienceLevel}
-                      onChange={(e) => handleInputChange("experienceLevel", e.target.value)}
-                      className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={mode === "view"}
-                    >
-                      {experienceLevels.map(level => (
-                        <option key={level.value} value={level.value}>
-                          {level.label}
-                        </option>
-                      ))}
-                    </select>
-                  </FormField>
-
-                  <FormField label="Availability Status" required>
-                    <select
-                      value={formData.availability}
-                      onChange={(e) => handleInputChange("availability", e.target.value)}
-                      className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={mode === "view"}
-                    >
-                      {availabilityOptions.map(option => (
-                        <option key={option.value} value={option.value}>
-                          {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </FormField>
-                </div>
-              </div>
-
-              {/* Skills */}
-              <div>
-                <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">
-                  Skills & Expertise
-                </h3>
-                <FormField label="Skills" required error={errors.skills}>
-                  {mode === "add" && (
-                    <div className="flex gap-2 mb-3">
-                      <Input
-                        value={newSkill}
-                        onChange={(e) => setNewSkill(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        placeholder="Add a skill and press Enter"
-                        className="flex-1"
-                      />
-                      <Button
-                        type="button"
-                        onClick={handleAddSkill}
-                        variant="outline"
-                        size="default"
-                      >
-                        <ApperIcon name="Plus" size={16} />
-                      </Button>
-                    </div>
-                  )}
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {formData.skills.map((skill, index) => (
-                      <Badge
-                        key={index}
-                        variant="secondary"
-                        className="flex items-center gap-1"
-                      >
-                        {skill}
-                        {mode === "add" && (
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveSkill(skill)}
-                            className="ml-1 hover:text-red-500"
-                          >
-                            <ApperIcon name="X" size={12} />
-                          </button>
-                        )}
-                      </Badge>
-                    ))}
-                    {formData.skills.length === 0 && (
-                      <p className="text-sm text-gray-500">No skills added yet</p>
-                    )}
-                  </div>
-                </FormField>
-              </div>
-
-              {/* Resume Summary */}
-              <div>
-                <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">
-                  Professional Summary
-                </h3>
-                <FormField label="Resume Summary" required error={errors.resumeSummary}>
-                  <Textarea
-                    value={formData.resumeSummary}
-                    onChange={(e) => handleInputChange("resumeSummary", e.target.value)}
-                    placeholder="Brief summary of professional background, key achievements, and career objectives..."
-                    rows={4}
-                    error={errors.resumeSummary}
-                    disabled={mode === "view"}
-                  />
-                </FormField>
-              </div>
-
-              {/* Status Display for View Mode */}
-              {mode === "view" && candidate && (
+            initial={{
+                scale: 0.95,
+                opacity: 0
+            }}
+            animate={{
+                scale: 1,
+                opacity: 1
+            }}
+            exit={{
+                scale: 0.95,
+                opacity: 0
+            }}
+            className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-6 border-b">
                 <div>
-                  <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">
-                    Application Status
-                  </h3>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-700">Current Status:</span>
-                      <Badge variant={candidate.status === "new" ? "primary" : candidate.status === "interviewed" ? "secondary" : candidate.status === "hired" ? "active" : "inactive"}>
-                        {candidate.status}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-700">Availability:</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getAvailabilityDisplay(formData.availability).color}`}>
-                        {getAvailabilityDisplay(formData.availability).label}
-                      </span>
-                    </div>
-                  </div>
+                    <h2 className="text-2xl font-bold font-display text-gray-900">
+                        {mode === "add" ? "Add New Candidate" : "Candidate Profile"}
+                    </h2>
+                    <p className="text-gray-600 mt-1">
+                        {mode === "add" ? "Create a detailed candidate profile" : "View and manage candidate information"}
+                    </p>
                 </div>
-              )}
-            </form>
-          </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={onClose}
-            >
-              {mode === "view" ? "Close" : "Cancel"}
-            </Button>
-            {mode === "add" && (
-              <Button
-                type="submit"
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="flex items-center gap-2"
-              >
-                {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
-                {isSubmitting ? "Adding..." : "Add Candidate"}
-              </Button>
-            )}
-</div>
+                <button
+                    onClick={onClose}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <ApperIcon name="X" size={24} />
+                </button>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    {/* Basic Information */}
+                    <div>
+                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Basic Information
+                                            </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField label="Full Name" required error={errors.name}>
+                                <Input
+                                    value={formData.name}
+                                    onChange={e => handleInputChange("name", e.target.value)}
+                                    placeholder="Enter full name"
+                                    error={errors.name}
+                                    disabled={mode === "view"} />
+                            </FormField>
+                            <FormField label="Email" required error={errors.email}>
+                                <Input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={e => handleInputChange("email", e.target.value)}
+                                    placeholder="Enter email address"
+                                    error={errors.email}
+                                    disabled={mode === "view"} />
+                            </FormField>
+                            <FormField label="Phone" required error={errors.phone}>
+                                <Input
+                                    value={formData.phone}
+                                    onChange={e => handleInputChange("phone", e.target.value)}
+                                    placeholder="Enter phone number"
+                                    error={errors.phone}
+                                    disabled={mode === "view"} />
+                            </FormField>
+                            <FormField label="Location" required error={errors.location}>
+                                <Input
+                                    value={formData.location}
+                                    onChange={e => handleInputChange("location", e.target.value)}
+                                    placeholder="City, State/Country"
+                                    error={errors.location}
+                                    disabled={mode === "view"} />
+                            </FormField>
+                        </div>
+                    </div>
+                    {/* Professional Information */}
+                    <div>
+                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Professional Information
+                                            </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField label="Current Job Title" required error={errors.currentJobTitle}>
+                                <Input
+                                    value={formData.currentJobTitle}
+                                    onChange={e => handleInputChange("currentJobTitle", e.target.value)}
+                                    placeholder="Current position"
+                                    error={errors.currentJobTitle}
+                                    disabled={mode === "view"} />
+                            </FormField>
+                            <FormField label="Position Applying For" required error={errors.position}>
+                                <Input
+                                    value={formData.position}
+                                    onChange={e => handleInputChange("position", e.target.value)}
+                                    placeholder="Desired position"
+                                    error={errors.position}
+                                    disabled={mode === "view"} />
+                            </FormField>
+                            <FormField label="Experience Level" required>
+                                <select
+                                    value={formData.experienceLevel}
+                                    onChange={e => handleInputChange("experienceLevel", e.target.value)}
+                                    className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+                                    disabled={mode === "view"}>
+                                    {experienceLevels.map(level => <option key={level.value} value={level.value}>
+                                        {level.label}
+                                    </option>)}
+                                </select>
+                            </FormField>
+                            <FormField label="Availability Status" required>
+                                <select
+                                    value={formData.availability}
+                                    onChange={e => handleInputChange("availability", e.target.value)}
+                                    className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+                                    disabled={mode === "view"}>
+                                    {availabilityOptions.map(option => <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>)}
+                                </select>
+                            </FormField>
+                        </div>
+                    </div>
+                    {/* Skills */}
+                    <div>
+                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Skills & Expertise
+                                            </h3>
+                        <FormField label="Skills" required error={errors.skills}>
+                            {mode === "add" && <div className="flex gap-2 mb-3">
+                                <Input
+                                    value={newSkill}
+                                    onChange={e => setNewSkill(e.target.value)}
+                                    onKeyPress={handleKeyPress}
+                                    placeholder="Add a skill and press Enter"
+                                    className="flex-1" />
+                                <Button type="button" onClick={handleAddSkill} variant="outline" size="default">
+                                    <ApperIcon name="Plus" size={16} />
+                                </Button>
+                            </div>}
+                            <div className="flex flex-wrap gap-2">
+                                {formData.skills.map(
+                                    (skill, index) => <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                                        {skill}
+                                        {mode === "add" && <button
+                                            type="button"
+                                            onClick={() => handleRemoveSkill(skill)}
+                                            className="ml-1 hover:text-red-500">
+                                            <ApperIcon name="X" size={12} />
+                                        </button>}
+                                    </Badge>
+                                )}
+                                {formData.skills.length === 0 && <p className="text-sm text-gray-500">No skills added yet</p>}
+                            </div>
+                        </FormField>
+                    </div>
+                    {/* Resume Summary */}
+                    <div>
+                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Professional Summary
+                                            </h3>
+                        <FormField label="Resume Summary" required error={errors.resumeSummary}>
+                            <Textarea
+                                value={formData.resumeSummary}
+                                onChange={e => handleInputChange("resumeSummary", e.target.value)}
+                                placeholder="Brief summary of professional background, key achievements, and career objectives..."
+                                rows={4}
+                                error={errors.resumeSummary}
+                                disabled={mode === "view"} />
+                        </FormField>
+                    </div>
+                    {/* Status Display for View Mode */}
+                    {mode === "view" && candidate && <div>
+                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Application Status
+                                              </h3>
+                        <div className="flex items-center gap-4 mb-6">
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-gray-700">Current Status:</span>
+                                <Badge
+                                    variant={candidate.status === "new" ? "primary" : candidate.status === "interviewed" ? "secondary" : candidate.status === "hired" ? "active" : "inactive"}>
+                                    {candidate.status}
+                                </Badge>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-gray-700">Availability:</span>
+                                <span
+                                    className={`px-2 py-1 rounded-full text-xs font-medium ${getAvailabilityDisplay(formData.availability).color}`}>
+                                    {getAvailabilityDisplay(formData.availability).label}
+                                </span>
+                            </div>
+                        </div>
+                        {/* Application Status Management */}
+                        {candidateApplications && candidateApplications.length > 0 && <div className="space-y-4">
+                            <h4 className="text-base font-medium text-gray-900">Applications</h4>
+                            {candidateApplications.map(
+                                application => <div key={application.Id} className="border border-gray-200 rounded-lg p-4">
+                                    <ApplicationStatusPipeline
+                                        currentStatus={application.status}
+                                        onStatusChange={onStatusChange}
+                                        applicationId={application.Id}
+                                        showUpdateDropdown={true} />
+                                    <div className="mt-3 pt-3 border-t border-gray-100">
+                                        <p className="text-sm text-gray-600">
+                                            <span className="font-medium">Applied to:</span> {application.jobTitle || "Unknown Position"}
+                                        </p>
+                                        <p className="text-sm text-gray-500 mt-1">Applied on {new Date(application.appliedAt).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>}
+                    </div>}
+                </form>
+            </div>
+            {/* Footer */}
+            <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
+                <Button type="button" variant="ghost" onClick={onClose}>
+                    {mode === "view" ? "Close" : "Cancel"}
+                </Button>
+                {mode === "add" && <Button
+                    type="submit"
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="flex items-center gap-2">
+                    {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
+                    {isSubmitting ? "Adding..." : "Add Candidate"}
+                </Button>}
+            </div>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>
+    </motion.div>
+</AnimatePresence>
   );
 };
 
