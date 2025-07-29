@@ -465,7 +465,7 @@ return (
                         </div>
                       </div>
                     )}
-                  </div>}
+</div>}
                 </div>}
               </div>
               
@@ -480,7 +480,7 @@ return (
                     type="submit"
                     disabled={isSubmitting}
                     className="flex items-center gap-2">
-                    {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
+{isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
                     {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
                   </Button>
 )}
