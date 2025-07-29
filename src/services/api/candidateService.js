@@ -19,13 +19,26 @@ export const candidateService = {
     return { ...candidate };
   },
 
-  async create(candidateData) {
+async create(candidateData) {
     await delay(400);
+    
+    // Validate required fields
+    const requiredFields = ['name', 'email', 'phone', 'location', 'currentJobTitle', 'position', 'skills', 'resumeSummary'];
+    for (const field of requiredFields) {
+      if (!candidateData[field] || (Array.isArray(candidateData[field]) && candidateData[field].length === 0)) {
+        throw new Error(`${field} is required`);
+      }
+    }
+    
     const newCandidate = {
       Id: Math.max(...candidates.map(c => c.Id), 0) + 1,
       ...candidateData,
-      appliedAt: new Date().toISOString()
+      status: candidateData.status || "new",
+      appliedAt: new Date().toISOString(),
+      experienceLevel: candidateData.experienceLevel || "entry",
+      availability: candidateData.availability || "available"
     };
+    
     candidates.push(newCandidate);
     return { ...newCandidate };
   },

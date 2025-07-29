@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import SearchBar from "@/components/molecules/SearchBar";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { candidateService } from "@/services/api/candidateService";
+import ApperIcon from "@/components/ApperIcon";
 import CandidateCard from "@/components/molecules/CandidateCard";
+import SearchBar from "@/components/molecules/SearchBar";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Badge from "@/components/atoms/Badge";
-import ApperIcon from "@/components/ApperIcon";
-import { candidateService } from "@/services/api/candidateService";
-import { toast } from "react-toastify";
 
 const Candidates = () => {
   const [candidates, setCandidates] = useState([]);
@@ -143,7 +143,7 @@ const Candidates = () => {
           icon="Users"
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCandidates.map((candidate) => (
             <CandidateCard
               key={candidate.Id}
@@ -154,8 +154,8 @@ const Candidates = () => {
           ))}
         </div>
       )}
+)}
     </div>
-  );
 };
 
 export default Candidates;
