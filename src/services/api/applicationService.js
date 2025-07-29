@@ -1,5 +1,4 @@
-import applicationsData from '@/services/mockData/applications.json';
-
+import applicationsData from "@/services/mockData/applications.json";
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -68,7 +67,7 @@ export const applicationService = {
 
     const newApplication = {
       Id: nextId++,
-      jobId: applicationData.jobId,
+jobId: applicationData.jobId,
       candidateId: applicationData.candidateId,
       appliedAt: new Date().toISOString(),
       status: 'applied',
@@ -77,6 +76,24 @@ export const applicationService = {
 
     applications.push(newApplication);
     return { ...newApplication };
+  },
+
+  // Update application status
+  async updateStatus(applicationId, newStatus) {
+    await delay(300);
+    
+    const validStatuses = ['applied', 'screening', 'interview_scheduled', 'final_review', 'hired', 'rejected'];
+    if (!validStatuses.includes(newStatus)) {
+      throw new Error('Invalid status');
+    }
+
+    const applicationIndex = applications.findIndex(app => app.Id === applicationId);
+    if (applicationIndex === -1) {
+      throw new Error('Application not found');
+    }
+
+    applications[applicationIndex].status = newStatus;
+    return { ...applications[applicationIndex] };
   },
 
   async update(id, applicationData) {
