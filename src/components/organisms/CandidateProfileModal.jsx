@@ -226,7 +226,8 @@ skills: prev.skills.filter(skill => skill !== skillToRemove)
 
   if (!isOpen) return null;
 
-  return (
+return (
+    <>
     <AnimatePresence>
     <motion.div
         initial={{
