@@ -481,23 +481,28 @@ application => <div key={application.Id} className="border border-gray-200 round
                     className="flex items-center gap-2">
                     {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
                     {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
-                </Button>
-                )}
+</Button>
+)}
               </div>
             </div>
+        </motion.div>
+      </AnimatePresence>
 
-        {/* Interview Scheduling Modal */}
-        <InterviewSchedulingModal
-          isOpen={showInterviewModal}
-          onClose={() => {
-            setShowInterviewModal(false);
-            setSelectedApplicationId(null);
-          }}
-          onSchedule={handleScheduleInterview}
-          applicationId={selectedApplicationId}
-        />
-    </motion.div>
-</AnimatePresence>
+      {/* Interview Scheduling Modal */}
+      <AnimatePresence>
+        {showInterviewModal && (
+          <InterviewSchedulingModal
+            isOpen={showInterviewModal}
+            onClose={() => {
+              setShowInterviewModal(false);
+              setSelectedApplicationId(null);
+            }}
+            onSchedule={handleScheduleInterview}
+            applicationId={selectedApplicationId}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
