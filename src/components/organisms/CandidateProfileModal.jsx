@@ -15,7 +15,7 @@ const CandidateProfileModal = ({
   onClose, 
   onSave, 
   candidate = null, 
-  mode = "add", // "add" or "view"
+  mode = "add", // "add", "view", or "edit"
   candidateApplications = [],
   onApplicationUpdate,
   onStatusChange
@@ -52,7 +52,7 @@ const [formData, setFormData] = useState({
   ];
 
   useEffect(() => {
-    if (candidate && mode === "view") {
+if (candidate && (mode === "view" || mode === "edit")) {
       setFormData({
         name: candidate.name || "",
         email: candidate.email || "",
@@ -124,7 +124,7 @@ const [formData, setFormData] = useState({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) {
@@ -137,7 +137,7 @@ const [formData, setFormData] = useState({
     try {
       const candidateData = {
         ...formData,
-        status: "new"
+        status: mode === "add" ? "new" : (candidate?.status || "new")
       };
       
       await onSave(candidateData);
@@ -148,7 +148,7 @@ const [formData, setFormData] = useState({
     } finally {
       setIsSubmitting(false);
     }
-};
+  };
 
   const handleInterviewSchedule = (applicationId) => {
     setSelectedApplicationId(applicationId);
@@ -255,10 +255,10 @@ const getAvailabilityDisplay = (availability) => {
             <div className="flex items-center justify-between p-6 border-b">
                 <div>
                     <h2 className="text-2xl font-bold font-display text-gray-900">
-                        {mode === "add" ? "Add New Candidate" : "Candidate Profile"}
+{mode === "add" ? "Add New Candidate" : mode === "edit" ? "Edit Candidate" : "Candidate Profile"}
                     </h2>
                     <p className="text-gray-600 mt-1">
-                        {mode === "add" ? "Create a detailed candidate profile" : "View and manage candidate information"}
+                        {mode === "add" ? "Create a detailed candidate profile" : mode === "edit" ? "Update candidate information" : "View and manage candidate information"}
                     </p>
                 </div>
                 <button
@@ -274,7 +274,7 @@ const getAvailabilityDisplay = (availability) => {
                         <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Basic Information
                                             </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField label="Full Name" required error={errors.name}>
+<FormField label="Full Name" required error={errors.name}>
                                 <Input
                                     value={formData.name}
                                     onChange={e => handleInputChange("name", e.target.value)}
@@ -310,7 +310,7 @@ const getAvailabilityDisplay = (availability) => {
                         </div>
                     </div>
                     {/* Professional Information */}
-                    <div>
+<div>
                         <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Professional Information
                                             </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -355,11 +355,11 @@ const getAvailabilityDisplay = (availability) => {
                         </div>
                     </div>
                     {/* Skills */}
-                    <div>
+<div>
                         <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Skills & Expertise
                                             </h3>
                         <FormField label="Skills" required error={errors.skills}>
-                            {mode === "add" && <div className="flex gap-2 mb-3">
+                            {(mode === "add" || mode === "edit") && <div className="flex gap-2 mb-3">
                                 <Input
                                     value={newSkill}
                                     onChange={e => setNewSkill(e.target.value)}
@@ -374,7 +374,7 @@ const getAvailabilityDisplay = (availability) => {
                                 {formData.skills.map(
                                     (skill, index) => <Badge key={index} variant="secondary" className="flex items-center gap-1">
                                         {skill}
-                                        {mode === "add" && <button
+                                        {(mode === "add" || mode === "edit") && <button
                                             type="button"
                                             onClick={() => handleRemoveSkill(skill)}
                                             className="ml-1 hover:text-red-500">
@@ -387,7 +387,7 @@ const getAvailabilityDisplay = (availability) => {
                         </FormField>
                     </div>
                     {/* Resume Summary */}
-                    <div>
+<div>
                         <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Professional Summary
                                             </h3>
                         <FormField label="Resume Summary" required error={errors.resumeSummary}>
@@ -456,20 +456,20 @@ application => <div key={application.Id} className="border border-gray-200 round
                 </form>
             </div>
             {/* Footer */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
+<div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
                 <Button type="button" variant="ghost" onClick={onClose}>
                     {mode === "view" ? "Close" : "Cancel"}
                 </Button>
-                {mode === "add" && <Button
+                {(mode === "add" || mode === "edit") && <Button
                     type="submit"
                     onClick={handleSubmit}
                     disabled={isSubmitting}
                     className="flex items-center gap-2">
                     {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
-                    {isSubmitting ? "Adding..." : "Add Candidate"}
+                    {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
                 </Button>}
             </div>
-</motion.div>
+        </motion.div>
 
         {/* Interview Scheduling Modal */}
         <InterviewSchedulingModal

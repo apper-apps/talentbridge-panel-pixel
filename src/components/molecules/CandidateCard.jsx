@@ -76,13 +76,20 @@ const CandidateCard = ({ candidate, className, onView, appliedJobs = [], ...prop
             Applied {format(new Date(candidate.appliedAt), "MMM d")}
           </div>
           
-          <div className="flex items-center space-x-2">
+<div className="flex items-center space-x-2">
             <button
               onClick={() => onView?.(candidate)}
               className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
               title="View Profile"
             >
               <ApperIcon name="Eye" size={14} />
+            </button>
+            <button
+              onClick={() => props.onEdit?.(candidate)}
+              className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+              title="Edit Candidate"
+            >
+              <ApperIcon name="Edit" size={14} />
             </button>
             <button
               onClick={() => props.onContact?.(candidate)}

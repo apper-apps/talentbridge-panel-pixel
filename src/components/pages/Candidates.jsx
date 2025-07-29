@@ -24,7 +24,7 @@ const [candidates, setCandidates] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [selectedCandidate, setSelectedCandidate] = useState(null)
-  const [modalMode, setModalMode] = useState('add')
+const [modalMode, setModalMode] = useState('add')
 
   const statusOptions = [
     { value: 'all', label: 'All Candidates' },
@@ -60,9 +60,15 @@ setError(null)
     }
 }
 
-  function handleViewCandidate(candidate) {
+function handleViewCandidate(candidate) {
     setSelectedCandidate(candidate)
     setModalMode('view')
+    setIsModalOpen(true)
+  }
+
+  function handleEditCandidate(candidate) {
+    setSelectedCandidate(candidate)
+    setModalMode('edit')
     setIsModalOpen(true)
   }
 
@@ -83,14 +89,20 @@ setError(null)
     }
 }
 async function handleStatusChange(applicationId, newStatus) {
-    try {
-      await applicationService.updateStatus(applicationId, newStatus);
-      
-      // Reload applications to get updated data
-      const updatedApplications = await applicationService.getAll();
-      setApplications(updatedApplications);
-      
-      toast.success('Application status updated successfully!');
+try {
+      if (modalMode === 'edit') {
+        await candidateService.update(selectedCandidate.Id, candidateData);
+        await loadCandidates(); // Reload candidates list
+        toast.success('Candidate updated successfully!');
+      } else {
+        await applicationService.updateStatus(applicationId, newStatus);
+        
+        // Reload applications to get updated data
+        const updatedApplications = await applicationService.getAll();
+        setApplications(updatedApplications);
+        
+        toast.success('Application status updated successfully!');
+      }
     } catch (error) {
       toast.error(error.message || 'Failed to update application status');
       console.error('Failed to update application status:', error);
@@ -274,12 +286,13 @@ Add Candidate
         </div>
       )}
 
-{/* View Candidate Modal */}
-<CandidateProfileModal
+{/* View/Edit Candidate Modal */}
+      <CandidateProfileModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onSave={modalMode === 'edit' ? handleAddCandidate : undefined}
         candidate={selectedCandidate}
-mode={modalMode}
+        mode={modalMode}
         candidateApplications={selectedCandidate ? getCandidateApplications(selectedCandidate.Id) : []}
         onApplicationUpdate={handleApplicationUpdate}
         onStatusChange={handleStatusChange}
