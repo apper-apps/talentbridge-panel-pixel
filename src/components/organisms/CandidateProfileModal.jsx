@@ -483,25 +483,25 @@ application => <div key={application.Id} className="border border-gray-200 round
                     {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
 </Button>
 )}
-              </div>
-            </div>
+</div>
         </motion.div>
-      </AnimatePresence>
+      </motion.div>
+    </AnimatePresence>
 
-      {/* Interview Scheduling Modal */}
-      <AnimatePresence>
-        {showInterviewModal && (
-          <InterviewSchedulingModal
-            isOpen={showInterviewModal}
-            onClose={() => {
-              setShowInterviewModal(false);
-              setSelectedApplicationId(null);
-            }}
-            onSchedule={handleScheduleInterview}
-            applicationId={selectedApplicationId}
-          />
-        )}
-      </AnimatePresence>
+    {/* Interview Scheduling Modal */}
+    <AnimatePresence>
+      {showInterviewModal && (
+        <InterviewSchedulingModal
+          isOpen={showInterviewModal}
+          onClose={() => {
+            setShowInterviewModal(false);
+            setSelectedApplicationId(null);
+          }}
+          onSchedule={handleScheduleInterview}
+          applicationId={selectedApplicationId}
+        />
+      )}
+    </AnimatePresence>
     </>
   );
 };
