@@ -97,6 +97,27 @@ async function handleStatusChange(applicationId, newStatus) {
     }
   }
 
+  // Helper function to determine candidate status from their applications
+  function getCandidateStatus(candidateId) {
+    const candidateApplications = applications.filter(app => app.candidateId === candidateId);
+    
+    if (candidateApplications.length === 0) return 'new';
+    
+    // Priority order for determining overall candidate status
+    const statusPriority = ['hired', 'rejected', 'final_review', 'interview_scheduled', 'screening', 'applied'];
+    
+    for (const status of statusPriority) {
+      if (candidateApplications.some(app => app.status === status)) {
+        return status === 'applied' ? 'new' : 
+               status === 'screening' ? 'interviewed' :
+               status === 'interview_scheduled' ? 'interviewed' :
+               status === 'final_review' ? 'interviewed' : status;
+      }
+    }
+    
+    return 'new';
+  }
+
   async function handleApplicationUpdate(applicationId, updates) {
     try {
       await applicationService.update(applicationId, updates)
@@ -119,7 +140,7 @@ async function handleStatusChange(applicationId, newStatus) {
     ).filter(Boolean)
   }
 
-  function getStatusCounts() {
+function getStatusCounts() {
     const counts = {
       all: candidates.length,
       new: 0,
@@ -129,12 +150,13 @@ async function handleStatusChange(applicationId, newStatus) {
     }
 
     candidates.forEach(candidate => {
-      if (counts.hasOwnProperty(candidate.status)) {
-        counts[candidate.status]++
+      const status = getCandidateStatus(candidate.Id);
+      if (counts.hasOwnProperty(status)) {
+        counts[status]++;
       }
-    })
+    });
 
-    return counts
+    return counts;
   }
 
   const statusCounts = getStatusCounts()
@@ -145,9 +167,10 @@ const filteredCandidates = candidates.filter(candidate => {
       candidate.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()))
     
-    const matchesStatus = statusFilter === 'all' || candidate.status === statusFilter
+    const candidateStatus = getCandidateStatus(candidate.Id);
+    const matchesStatus = statusFilter === 'all' || candidateStatus === statusFilter;
     
-    return matchesSearch && matchesStatus
+    return matchesSearch && matchesStatus;
   })
   return (
 <div className="space-y-6">

@@ -64,16 +64,18 @@ const ApplicationStatusPipeline = ({
 
 const currentStageIndex = statusStages.findIndex(stage => stage.key === currentStatus);
   
-  const handleStatusUpdate = async (newStatus) => {
-    if (onStatusChange && applicationId) {
+const handleStatusUpdate = async (newStatus) => {
+    if (onStatusChange && applicationId && newStatus !== currentStatus) {
       setIsUpdating(true);
       try {
         await onStatusChange(applicationId, newStatus);
       } catch (error) {
         console.error('Failed to update status:', error);
-      } finally {
-        setIsUpdating(false);
+        // Reset the select value on error by triggering a re-render
+        setTimeout(() => setIsUpdating(false), 100);
+        return;
       }
+      setIsUpdating(false);
     }
   };
 

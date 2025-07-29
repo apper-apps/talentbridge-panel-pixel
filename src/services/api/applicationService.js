@@ -83,18 +83,25 @@ const newApplication = {
 async updateStatus(applicationId, newStatus) {
     await delay(300);
     
+    // Validate application ID
+    if (!applicationId || typeof applicationId !== 'number') {
+      throw new Error('Invalid application ID');
+    }
+    
     const validStatuses = ['applied', 'screening', 'interview_scheduled', 'final_review', 'hired', 'rejected'];
     if (!validStatuses.includes(newStatus)) {
-      throw new Error('Invalid status');
+      throw new Error(`Invalid status: ${newStatus}. Valid statuses are: ${validStatuses.join(', ')}`);
     }
 
     const applicationIndex = applications.findIndex(app => app.Id === applicationId);
     if (applicationIndex === -1) {
-      throw new Error('Application not found');
+      throw new Error(`Application with ID ${applicationId} not found`);
     }
 
+    // Update the application status and timestamp
     applications[applicationIndex].status = newStatus;
     applications[applicationIndex].updatedAt = new Date().toISOString();
+    
     return { ...applications[applicationIndex] };
   },
 
