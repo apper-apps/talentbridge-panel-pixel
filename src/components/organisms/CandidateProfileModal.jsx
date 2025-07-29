@@ -463,32 +463,31 @@ return (
                             </div>
                           )}
                         </div>
-                      </div>
+</div>
 )}
 </div>}
 </div>}
-</div>
-              
-              {/* Footer */}
-              <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
-                <Button type="button" variant="ghost" onClick={onClose}>
-                  {mode === "view" ? "Close" : "Cancel"}
-                </Button>
-                {(mode === "add" || mode === "edit") && (
-                  <Button
-                    variant="primary"
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="flex items-center gap-2">
-                    {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
-                    {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
+
+                {/* Footer */}
+                <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
+                  <Button type="button" variant="ghost" onClick={onClose}>
+                    {mode === "view" ? "Close" : "Cancel"}
                   </Button>
-                )}
-              </div>
-            </form>
+                  {(mode === "add" || mode === "edit") && (
+                    <Button
+                      variant="primary"
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex items-center gap-2">
+                      {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
+                      {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      </AnimatePresence>
+        </AnimatePresence>
     {/* Interview Scheduling Modal */}
     <AnimatePresence>
       {showInterviewModal && (
