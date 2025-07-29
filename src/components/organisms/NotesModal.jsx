@@ -59,10 +59,16 @@ const NotesModal = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
     
     if (!validateForm()) {
+      return;
+    }
+
+    // Prevent accidental submissions
+    if (isSubmitting) {
       return;
     }
 
@@ -85,6 +91,14 @@ const NotesModal = ({
     }
   };
 
+  const handleBackdropClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.target === e.currentTarget && !isSubmitting) {
+      onClose();
+    }
+  };
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
@@ -103,7 +117,7 @@ const NotesModal = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-            onClick={onClose}
+            onClick={handleBackdropClick}
           />
           
           <div className="flex min-h-full items-center justify-center p-4">
