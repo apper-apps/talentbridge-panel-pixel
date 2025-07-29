@@ -268,12 +268,13 @@ Add Candidate
           }
         />
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredCandidates.map(candidate => (
             <CandidateCard
               key={candidate.Id}
               candidate={candidate}
               onView={handleViewCandidate}
+              onEdit={handleEditCandidate}
               onContact={handleContactCandidate}
               appliedJobs={getAppliedJobsForCandidate(candidate.Id)}
             />
