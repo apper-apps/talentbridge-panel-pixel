@@ -8,6 +8,8 @@ import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
 import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import CandidateProfileModal from "@/components/organisms/CandidateProfileModal";
 
 const Candidates = () => {
   const [candidates, setCandidates] = useState([]);
@@ -47,11 +49,22 @@ const Candidates = () => {
     toast.info(`Viewing profile for ${candidate.name}`);
   };
 
-  const handleContactCandidate = (candidate) => {
-    toast.info(`Contacting ${candidate.name} at ${candidate.email}`);
-  };
+const handleContactCandidate = (candidate) => {
+toast.info(`Contacting ${candidate.name} at ${candidate.email}`);
+};
 
-  const statusOptions = [
+const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+const handleAddCandidate = async (candidateData) => {
+try {
+await candidateService.create(candidateData);
+await loadCandidates(); // Refresh the list
+} catch (error) {
+throw new Error(error.message || "Failed to add candidate");
+}
+};
+
+const statusOptions = [
     { value: "all", label: "All Status" },
     { value: "new", label: "New" },
     { value: "interviewed", label: "Interviewed" },
@@ -78,33 +91,42 @@ const Candidates = () => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-display text-gray-900">
-            Candidate Pool
-          </h1>
-          <p className="text-gray-600">
-            Review and manage job applicants
-          </p>
-        </div>
-        
-        {/* Status Overview */}
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Badge variant="primary">
-              {statusCounts.new} New
-            </Badge>
-            <Badge variant="secondary">
-              {statusCounts.interviewed} Interviewed
-            </Badge>
-            <Badge variant="active">
-              {statusCounts.hired} Hired
-            </Badge>
-          </div>
-        </div>
-      </div>
+<div className="space-y-6">
+{/* Header */}
+<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+<div>
+<h1 className="text-2xl font-bold font-display text-gray-900">
+Candidate Pool
+</h1>
+<p className="text-gray-600">
+Review and manage job applicants
+</p>
+</div>
+
+<div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+{/* Add Candidate Button */}
+<Button
+onClick={() => setIsAddModalOpen(true)}
+className="flex items-center gap-2"
+>
+<ApperIcon name="Plus" size={16} />
+Add Candidate
+</Button>
+
+{/* Status Overview */}
+<div className="flex items-center space-x-2">
+<Badge variant="primary">
+{statusCounts.new} New
+</Badge>
+<Badge variant="secondary">
+{statusCounts.interviewed} Interviewed
+</Badge>
+<Badge variant="active">
+{statusCounts.hired} Hired
+</Badge>
+</div>
+</div>
+</div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
