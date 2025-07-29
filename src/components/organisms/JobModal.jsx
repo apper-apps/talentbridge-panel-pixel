@@ -6,7 +6,7 @@ import FormField from "@/components/molecules/FormField";
 import Textarea from "@/components/atoms/Textarea";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
-
+import NotesList from "@/components/molecules/NotesList";
 const JobModal = ({ isOpen, onClose, onSave, job = null, clients = [] }) => {
 const [formData, setFormData] = useState({
     title: "",
@@ -314,7 +314,18 @@ const validateForm = () => {
                     error={errors.description}
                     rows={5}
                   />
-                </FormField>
+</FormField>
+
+                {/* Job Notes Section - Only show for existing jobs */}
+                {job && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <NotesList
+                      entityType="job"
+                      entityId={job.Id}
+                      entityName={job.title}
+                    />
+                  </div>
+                )}
 
                 <div className="flex items-center space-x-3 pt-4">
                   <Button

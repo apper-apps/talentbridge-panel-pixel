@@ -71,8 +71,9 @@ const newApplication = {
       jobId: applicationData.jobId,
       candidateId: applicationData.candidateId,
       appliedAt: new Date().toISOString(),
-      status: 'applied',
-      notes: applicationData.notes || ''
+status: 'applied',
+      notes: applicationData.notes || '',
+      notesCount: 0
     };
 
     applications.push(newApplication);

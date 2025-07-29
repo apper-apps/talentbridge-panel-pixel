@@ -9,6 +9,7 @@ import Textarea from "@/components/atoms/Textarea";
 import Badge from "@/components/atoms/Badge";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
+import NotesList from "@/components/molecules/NotesList";
 import { applicationService } from "@/services/api/applicationService";
 const CandidateProfileModal = ({ 
   isOpen, 
@@ -207,7 +208,7 @@ const handleSubmit = async (e) => {
   const handleRemoveSkill = (skillToRemove) => {
     setFormData(prev => ({
       ...prev,
-      skills: prev.skills.filter(skill => skill !== skillToRemove)
+skills: prev.skills.filter(skill => skill !== skillToRemove)
     }));
   };
 
@@ -217,10 +218,12 @@ const handleSubmit = async (e) => {
       handleAddSkill();
     }
   };
-const getAvailabilityDisplay = (availability) => {
+
+  const getAvailabilityDisplay = (availability) => {
     const option = availabilityOptions.find(opt => opt.value === availability);
     return option || availabilityOptions[0];
   };
+
   if (!isOpen) return null;
 
   return (
@@ -400,6 +403,16 @@ const getAvailabilityDisplay = (availability) => {
                                 disabled={mode === "view"} />
                         </FormField>
 </div>
+
+                    {/* Communication Notes */}
+                    <div className="border-t border-gray-200 pt-6">
+                      <NotesList
+                        entityType="candidate"
+                        entityId={candidate.Id}
+                        entityName={candidate.name}
+                      />
+                    </div>
+
                     {/* Application Status Management */}
                     {(mode === "view" || mode === "edit") && candidate && <div>
                         <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Application Status
@@ -447,7 +460,7 @@ application => <div key={application.Id} className="border border-gray-200 round
                                               {application.interview.type} with {application.interview.interviewer}
                                             </p>
                                           </div>
-                                        )}
+)}
                                     </div>
                                 </div>
                             )}
