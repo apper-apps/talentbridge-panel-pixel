@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { applicationService } from "@/services/api/applicationService";
 import { jobService } from "@/services/api/jobService";
 import { candidateService } from "@/services/api/candidateService";
 import ApperIcon from "@/components/ApperIcon";
@@ -14,22 +15,23 @@ const Dashboard = () => {
   const [metrics, setMetrics] = useState({
     totalJobs: 0,
     totalCandidates: 0,
-    activeJobs: 0,
+activeJobs: 0,
     newCandidates: 0
   });
   const [recentJobs, setRecentJobs] = useState([]);
   const [recentCandidates, setRecentCandidates] = useState([]);
+  const [upcomingInterviews, setUpcomingInterviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const loadDashboardData = async () => {
-    try {
+try {
       setLoading(true);
       setError("");
       
-      const [jobs, candidates] = await Promise.all([
+      const [jobs, candidates, interviews] = await Promise.all([
         jobService.getAll(),
-        candidateService.getAll()
+        candidateService.getAll(),
+        applicationService.getUpcomingInterviews()
       ]);
 
       // Calculate metrics
@@ -51,6 +53,7 @@ const Dashboard = () => {
       // Get recent data
       setRecentJobs(jobs.slice(0, 5));
       setRecentCandidates(candidates.slice(0, 5));
+      setUpcomingInterviews(interviews.slice(0, 5));
 
     } catch (err) {
       setError(err.message || "Failed to load dashboard data");
@@ -58,7 +61,6 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     loadDashboardData();
   }, []);
@@ -108,8 +110,8 @@ const Dashboard = () => {
             change={15.7}
             changeType="positive" />
     </div>
-    {/* Recent Activity */}
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+{/* Recent Activity and Upcoming Interviews */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Jobs */}
         <Card className="hover:shadow-lg transition-all duration-300">
             <CardHeader>
@@ -131,7 +133,7 @@ const Dashboard = () => {
                                     {job.status}
                                 </span>
                                 <span className="text-xs text-gray-500">
-                                    {job.applicants}applicants
+                                    {job.applicants} applicants
                                                           </span>
                             </div>
                         </div>
@@ -144,6 +146,7 @@ const Dashboard = () => {
                 </div>
             </CardContent>
         </Card>
+        
         {/* Recent Candidates */}
         <Card className="hover:shadow-lg transition-all duration-300">
             <CardHeader>
@@ -178,6 +181,61 @@ const Dashboard = () => {
                             </p>
                         </div>
                     </div>)}
+                </div>
+            </CardContent>
+        </Card>
+
+        {/* Upcoming Interviews */}
+        <Card className="hover:shadow-lg transition-all duration-300">
+            <CardHeader>
+                <CardTitle className="flex items-center">
+                    <ApperIcon name="Calendar" size={24} className="mr-3 text-purple-600" />Upcoming Interviews
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    {upcomingInterviews.length === 0 ? (
+                        <div className="text-center py-8">
+                            <ApperIcon name="Calendar" size={48} className="mx-auto text-gray-400 mb-3" />
+                            <p className="text-sm text-gray-500">No upcoming interviews</p>
+                        </div>
+                    ) : (
+                        upcomingInterviews.map(interview => {
+                            const interviewDate = new Date(`${interview.interview.date}T${interview.interview.time}`);
+                            return (
+                                <div
+                                    key={interview.Id}
+                                    className="p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-lg border border-purple-200 hover:shadow-md transition-all duration-200">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex-1">
+                                            <h4 className="font-semibold text-gray-900 mb-1">
+                                                {interview.interview.interviewer}
+                                            </h4>
+                                            <p className="text-sm text-gray-600 mb-2">
+                                                {interview.interview.type} Interview
+                                            </p>
+                                            <div className="flex items-center space-x-2 mb-2">
+                                                <ApperIcon name="Clock" size={14} className="text-purple-600" />
+                                                <span className="text-sm text-purple-700">
+                                                    {format(interviewDate, "MMM d, yyyy 'at' h:mm a")}
+                                                </span>
+                                            </div>
+                                            {interview.interview.notes && (
+                                                <p className="text-xs text-gray-500 truncate">
+                                                    {interview.interview.notes}
+                                                </p>
+                                            )}
+                                        </div>
+                                        <div className="text-right">
+                                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                Scheduled
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
                 </div>
             </CardContent>
         </Card>

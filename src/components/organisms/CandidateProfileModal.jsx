@@ -3,12 +3,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import ApperIcon from "@/components/ApperIcon";
 import ApplicationStatusPipeline from "@/components/molecules/ApplicationStatusPipeline";
+import InterviewSchedulingModal from "@/components/organisms/InterviewSchedulingModal";
 import FormField from "@/components/molecules/FormField";
 import Textarea from "@/components/atoms/Textarea";
 import Badge from "@/components/atoms/Badge";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
-
+import { applicationService } from "@/services/api/applicationService";
 const CandidateProfileModal = ({ 
   isOpen, 
   onClose, 
@@ -19,7 +20,7 @@ const CandidateProfileModal = ({
   onApplicationUpdate,
   onStatusChange
 }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
@@ -35,7 +36,8 @@ const CandidateProfileModal = ({
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newSkill, setNewSkill] = useState("");
-
+  const [showInterviewModal, setShowInterviewModal] = useState(false);
+  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const experienceLevels = [
     { value: "entry", label: "Entry Level (0-2 years)" },
     { value: "mid", label: "Mid Level (3-5 years)" },
@@ -146,8 +148,29 @@ const CandidateProfileModal = ({
     } finally {
       setIsSubmitting(false);
     }
+};
+
+  const handleInterviewSchedule = (applicationId) => {
+    setSelectedApplicationId(applicationId);
+    setShowInterviewModal(true);
   };
 
+  const handleScheduleInterview = async (interviewData) => {
+    try {
+      await applicationService.scheduleInterview(selectedApplicationId, interviewData);
+      toast.success("Interview scheduled successfully!");
+      setShowInterviewModal(false);
+      setSelectedApplicationId(null);
+      
+      // Refresh application data if onApplicationUpdate is provided
+      if (onApplicationUpdate) {
+        const updatedApplication = await applicationService.getById(selectedApplicationId);
+        onApplicationUpdate(selectedApplicationId, updatedApplication);
+      }
+    } catch (error) {
+      toast.error(error.message || "Failed to schedule interview");
+    }
+  };
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -194,12 +217,10 @@ const CandidateProfileModal = ({
       handleAddSkill();
     }
   };
-
-  const getAvailabilityDisplay = (availability) => {
+const getAvailabilityDisplay = (availability) => {
     const option = availabilityOptions.find(opt => opt.value === availability);
     return option || availabilityOptions[0];
   };
-
   if (!isOpen) return null;
 
   return (
@@ -403,18 +424,30 @@ const CandidateProfileModal = ({
                         {candidateApplications && candidateApplications.length > 0 && <div className="space-y-4">
                             <h4 className="text-base font-medium text-gray-900">Applications</h4>
                             {candidateApplications.map(
-                                application => <div key={application.Id} className="border border-gray-200 rounded-lg p-4">
+application => <div key={application.Id} className="border border-gray-200 rounded-lg p-4">
                                     <ApplicationStatusPipeline
                                         currentStatus={application.status}
                                         onStatusChange={onStatusChange}
                                         applicationId={application.Id}
-                                        showUpdateDropdown={true} />
+                                        showUpdateDropdown={true}
+                                        onInterviewSchedule={handleInterviewSchedule} />
                                     <div className="mt-3 pt-3 border-t border-gray-100">
                                         <p className="text-sm text-gray-600">
                                             <span className="font-medium">Applied to:</span> {application.jobTitle || "Unknown Position"}
                                         </p>
                                         <p className="text-sm text-gray-500 mt-1">Applied on {new Date(application.appliedAt).toLocaleDateString()}
                                         </p>
+                                        {application.interview && (
+                                          <div className="mt-2 p-2 bg-purple-50 rounded-lg">
+                                            <p className="text-sm font-medium text-purple-800">Interview Scheduled</p>
+                                            <p className="text-sm text-purple-600">
+                                              {new Date(application.interview.date).toLocaleDateString()} at {application.interview.time}
+                                            </p>
+                                            <p className="text-sm text-purple-600">
+                                              {application.interview.type} with {application.interview.interviewer}
+                                            </p>
+                                          </div>
+                                        )}
                                     </div>
                                 </div>
                             )}
@@ -436,7 +469,18 @@ const CandidateProfileModal = ({
                     {isSubmitting ? "Adding..." : "Add Candidate"}
                 </Button>}
             </div>
-        </motion.div>
+</motion.div>
+
+        {/* Interview Scheduling Modal */}
+        <InterviewSchedulingModal
+          isOpen={showInterviewModal}
+          onClose={() => {
+            setShowInterviewModal(false);
+            setSelectedApplicationId(null);
+          }}
+          onSchedule={handleScheduleInterview}
+          applicationId={selectedApplicationId}
+        />
     </motion.div>
 </AnimatePresence>
   );

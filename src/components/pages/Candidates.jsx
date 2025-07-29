@@ -279,7 +279,7 @@ Add Candidate
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         candidate={selectedCandidate}
-        mode={modalMode}
+mode={modalMode}
         candidateApplications={selectedCandidate ? getCandidateApplications(selectedCandidate.Id) : []}
         onApplicationUpdate={handleApplicationUpdate}
         onStatusChange={handleStatusChange}
