@@ -26,9 +26,9 @@ const CandidateCard = ({ candidate, className, onView, appliedJobs = [], ...prop
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center shadow-lg">
+<div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center shadow-lg">
               <span className="text-white font-semibold text-lg">
-                {candidate.name.charAt(0).toUpperCase()}
+                {candidate.name?.charAt(0)?.toUpperCase() || '?'}
               </span>
             </div>
             <div>
