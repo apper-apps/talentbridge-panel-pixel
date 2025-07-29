@@ -95,7 +95,7 @@ const NotesModal = ({
   const selectedCategory = NOTE_CATEGORIES.find(cat => cat.value === formData.category);
 
   return (
-    <AnimatePresence>
+<AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <motion.div
@@ -123,6 +123,7 @@ const NotesModal = ({
                   </p>
                 </div>
                 <button
+                  type="button"
                   onClick={onClose}
                   className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                 >
@@ -130,60 +131,62 @@ const NotesModal = ({
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                <FormField label="Category" required>
-                  <div className="grid grid-cols-2 gap-3">
-                    {NOTE_CATEGORIES.map((category) => (
-                      <button
-                        key={category.value}
-                        type="button"
-                        onClick={() => handleInputChange("category", category.value)}
-                        className={`flex items-center p-3 rounded-lg border-2 transition-all ${
-                          formData.category === category.value
-                            ? "border-primary-500 bg-primary-50"
-                            : "border-gray-200 hover:border-gray-300"
-                        }`}
-                      >
-                        <ApperIcon 
-                          name={category.icon} 
-                          size={16} 
-                          className={`mr-2 ${
+              <form onSubmit={handleSubmit} className="flex flex-col">
+                <div className="p-6 space-y-6">
+                  <FormField label="Category" required>
+                    <div className="grid grid-cols-2 gap-3">
+                      {NOTE_CATEGORIES.map((category) => (
+                        <button
+                          key={category.value}
+                          type="button"
+                          onClick={() => handleInputChange("category", category.value)}
+                          className={`flex items-center p-3 rounded-lg border-2 transition-all ${
                             formData.category === category.value
-                              ? "text-primary-600"
-                              : category.color
+                              ? "border-primary-500 bg-primary-50"
+                              : "border-gray-200 hover:border-gray-300"
                           }`}
-                        />
-                        <span className={`text-sm font-medium ${
-                          formData.category === category.value
-                            ? "text-primary-900"
-                            : "text-gray-700"
-                        }`}>
-                          {category.value}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </FormField>
+                        >
+                          <ApperIcon 
+                            name={category.icon} 
+                            size={16} 
+                            className={`mr-2 ${
+                              formData.category === category.value
+                                ? "text-primary-600"
+                                : category.color
+                            }`}
+                          />
+                          <span className={`text-sm font-medium ${
+                            formData.category === category.value
+                              ? "text-primary-900"
+                              : "text-gray-700"
+                          }`}>
+                            {category.value}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </FormField>
 
-                <FormField
-                  label="Note Content"
-                  required
-                  error={errors.content}
-                >
-                  <Textarea
-                    placeholder={`Add your ${formData.category.toLowerCase()} notes here...`}
-                    value={formData.content}
-                    onChange={(e) => handleInputChange("content", e.target.value)}
+                  <FormField
+                    label="Note Content"
+                    required
                     error={errors.content}
-                    rows={6}
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>Be specific about the interaction and next steps</span>
-                    <span>{formData.content.length}/1000</span>
-                  </div>
-                </FormField>
+                  >
+                    <Textarea
+                      placeholder={`Add your ${formData.category.toLowerCase()} notes here...`}
+                      value={formData.content}
+                      onChange={(e) => handleInputChange("content", e.target.value)}
+                      error={errors.content}
+                      rows={6}
+                    />
+                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                      <span>Be specific about the interaction and next steps</span>
+                      <span>{formData.content.length}/1000</span>
+                    </div>
+                  </FormField>
+                </div>
 
-                <div className="flex items-center space-x-3 pt-4">
+                <div className="flex items-center space-x-3 p-6 border-t bg-gray-50">
                   <Button
                     type="submit"
                     disabled={isSubmitting}

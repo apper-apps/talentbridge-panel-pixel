@@ -271,224 +271,221 @@ return (
                     <ApperIcon name="X" size={24} />
                 </button>
             </div>
-            <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                    {/* Basic Information */}
-                    <div>
-                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Basic Information
-                                            </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-<FormField label="Full Name" required error={errors.name}>
-                                <Input
-                                    value={formData.name}
-                                    onChange={e => handleInputChange("name", e.target.value)}
-                                    placeholder="Enter full name"
-                                    error={errors.name}
-                                    disabled={mode === "view"} />
-                            </FormField>
-                            <FormField label="Email" required error={errors.email}>
-                                <Input
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={e => handleInputChange("email", e.target.value)}
-                                    placeholder="Enter email address"
-                                    error={errors.email}
-                                    disabled={mode === "view"} />
-                            </FormField>
-                            <FormField label="Phone" required error={errors.phone}>
-                                <Input
-                                    value={formData.phone}
-                                    onChange={e => handleInputChange("phone", e.target.value)}
-                                    placeholder="Enter phone number"
-                                    error={errors.phone}
-                                    disabled={mode === "view"} />
-                            </FormField>
-                            <FormField label="Location" required error={errors.location}>
-                                <Input
-                                    value={formData.location}
-                                    onChange={e => handleInputChange("location", e.target.value)}
-                                    placeholder="City, State/Country"
-                                    error={errors.location}
-                                    disabled={mode === "view"} />
-                            </FormField>
-                        </div>
-                    </div>
-                    {/* Professional Information */}
-<div>
-                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Professional Information
-                                            </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField label="Current Job Title" required error={errors.currentJobTitle}>
-                                <Input
-                                    value={formData.currentJobTitle}
-                                    onChange={e => handleInputChange("currentJobTitle", e.target.value)}
-                                    placeholder="Current position"
-                                    error={errors.currentJobTitle}
-                                    disabled={mode === "view"} />
-                            </FormField>
-                            <FormField label="Position Applying For" required error={errors.position}>
-                                <Input
-                                    value={formData.position}
-                                    onChange={e => handleInputChange("position", e.target.value)}
-                                    placeholder="Desired position"
-                                    error={errors.position}
-                                    disabled={mode === "view"} />
-                            </FormField>
-                            <FormField label="Experience Level" required>
-                                <select
-                                    value={formData.experienceLevel}
-                                    onChange={e => handleInputChange("experienceLevel", e.target.value)}
-                                    className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-                                    disabled={mode === "view"}>
-                                    {experienceLevels.map(level => <option key={level.value} value={level.value}>
-                                        {level.label}
-                                    </option>)}
-                                </select>
-                            </FormField>
-                            <FormField label="Availability Status" required>
-                                <select
-                                    value={formData.availability}
-                                    onChange={e => handleInputChange("availability", e.target.value)}
-                                    className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
-                                    disabled={mode === "view"}>
-                                    {availabilityOptions.map(option => <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>)}
-                                </select>
-                            </FormField>
-                        </div>
-                    </div>
-                    {/* Skills */}
-<div>
-                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Skills & Expertise
-                                            </h3>
-                        <FormField label="Skills" required error={errors.skills}>
-                            {(mode === "add" || mode === "edit") && <div className="flex gap-2 mb-3">
-                                <Input
-                                    value={newSkill}
-                                    onChange={e => setNewSkill(e.target.value)}
-                                    onKeyPress={handleKeyPress}
-                                    placeholder="Add a skill and press Enter"
-                                    className="flex-1" />
-                                <Button type="button" onClick={handleAddSkill} variant="outline" size="default">
-                                    <ApperIcon name="Plus" size={16} />
-                                </Button>
-                            </div>}
-                            <div className="flex flex-wrap gap-2">
-                                {formData.skills.map(
-                                    (skill, index) => <Badge key={index} variant="secondary" className="flex items-center gap-1">
-                                        {skill}
-                                        {(mode === "add" || mode === "edit") && <button
-                                            type="button"
-                                            onClick={() => handleRemoveSkill(skill)}
-                                            className="ml-1 hover:text-red-500">
-                                            <ApperIcon name="X" size={12} />
-                                        </button>}
-                                    </Badge>
-                                )}
-                                {formData.skills.length === 0 && <p className="text-sm text-gray-500">No skills added yet</p>}
-                            </div>
-                        </FormField>
-                    </div>
-                    {/* Resume Summary */}
-<div>
-                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Professional Summary
-                                            </h3>
-                        <FormField label="Resume Summary" required error={errors.resumeSummary}>
-                            <Textarea
-                                value={formData.resumeSummary}
-                                onChange={e => handleInputChange("resumeSummary", e.target.value)}
-                                placeholder="Brief summary of professional background, key achievements, and career objectives..."
-                                rows={4}
-                                error={errors.resumeSummary}
-                                disabled={mode === "view"} />
-                        </FormField>
-</div>
-
-                    {/* Communication Notes */}
-                    <div className="border-t border-gray-200 pt-6">
-                      <NotesList
-                        entityType="candidate"
-                        entityId={candidate.Id}
-                        entityName={candidate.name}
-                      />
-                    </div>
-
-                    {/* Application Status Management */}
-                    {(mode === "view" || mode === "edit") && candidate && <div>
-                        <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Application Status
-                                              </h3>
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-gray-700">Current Status:</span>
-                                <Badge
-                                    variant={candidate.status === "new" ? "primary" : candidate.status === "interviewed" ? "secondary" : candidate.status === "hired" ? "active" : "inactive"}>
-                                    {candidate.status}
-                                </Badge>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium text-gray-700">Availability:</span>
-                                <span
-                                    className={`px-2 py-1 rounded-full text-xs font-medium ${getAvailabilityDisplay(formData.availability).color}`}>
-                                    {getAvailabilityDisplay(formData.availability).label}
-                                </span>
-                            </div>
-                        </div>
-                        {/* Application Status Management */}
-                        {candidateApplications && candidateApplications.length > 0 && <div className="space-y-4">
-                            <h4 className="text-base font-medium text-gray-900">Applications</h4>
-                            {candidateApplications.map(
-application => <div key={application.Id} className="border border-gray-200 rounded-lg p-4">
-                                    <ApplicationStatusPipeline
-                                        currentStatus={application.status}
-                                        onStatusChange={onStatusChange}
-                                        applicationId={application.Id}
-                                        showUpdateDropdown={true}
-                                        onInterviewSchedule={handleInterviewSchedule} />
-                                    <div className="mt-3 pt-3 border-t border-gray-100">
-                                        <p className="text-sm text-gray-600">
-                                            <span className="font-medium">Applied to:</span> {application.jobTitle || "Unknown Position"}
-                                        </p>
-                                        <p className="text-sm text-gray-500 mt-1">Applied on {new Date(application.appliedAt).toLocaleDateString()}
-                                        </p>
-                                        {application.interview && (
-                                          <div className="mt-2 p-2 bg-purple-50 rounded-lg">
-                                            <p className="text-sm font-medium text-purple-800">Interview Scheduled</p>
-                                            <p className="text-sm text-purple-600">
-                                              {new Date(application.interview.date).toLocaleDateString()} at {application.interview.time}
-                                            </p>
-                                            <p className="text-sm text-purple-600">
-                                              {application.interview.type} with {application.interview.interviewer}
-                                            </p>
-                                          </div>
-)}
-                                    </div>
-                                </div>
-                            )}
-                        </div>}
+<form onSubmit={handleSubmit} className="flex flex-col h-full">
+              <div className="overflow-y-auto max-h-[calc(90vh-140px)] p-6 space-y-6">
+                {/* Basic Information */}
+                <div>
+                  <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Basic Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField label="Full Name" required error={errors.name}>
+                      <Input
+                        value={formData.name}
+                        onChange={e => handleInputChange("name", e.target.value)}
+                        placeholder="Enter full name"
+                        error={errors.name}
+                        disabled={mode === "view"} />
+                    </FormField>
+                    <FormField label="Email" required error={errors.email}>
+                      <Input
+                        type="email"
+                        value={formData.email}
+                        onChange={e => handleInputChange("email", e.target.value)}
+                        placeholder="Enter email address"
+                        error={errors.email}
+                        disabled={mode === "view"} />
+                    </FormField>
+                    <FormField label="Phone" required error={errors.phone}>
+                      <Input
+                        value={formData.phone}
+                        onChange={e => handleInputChange("phone", e.target.value)}
+                        placeholder="Enter phone number"
+                        error={errors.phone}
+                        disabled={mode === "view"} />
+                    </FormField>
+                    <FormField label="Location" required error={errors.location}>
+                      <Input
+                        value={formData.location}
+                        onChange={e => handleInputChange("location", e.target.value)}
+                        placeholder="City, State/Country"
+                        error={errors.location}
+                        disabled={mode === "view"} />
+                    </FormField>
+                  </div>
+                </div>
+                
+                {/* Professional Information */}
+                <div>
+                  <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Professional Information</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField label="Current Job Title" required error={errors.currentJobTitle}>
+                      <Input
+                        value={formData.currentJobTitle}
+                        onChange={e => handleInputChange("currentJobTitle", e.target.value)}
+                        placeholder="Current position"
+                        error={errors.currentJobTitle}
+                        disabled={mode === "view"} />
+                    </FormField>
+                    <FormField label="Position Applying For" required error={errors.position}>
+                      <Input
+                        value={formData.position}
+                        onChange={e => handleInputChange("position", e.target.value)}
+                        placeholder="Desired position"
+                        error={errors.position}
+                        disabled={mode === "view"} />
+                    </FormField>
+                    <FormField label="Experience Level" required>
+                      <select
+                        value={formData.experienceLevel}
+                        onChange={e => handleInputChange("experienceLevel", e.target.value)}
+                        className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={mode === "view"}>
+                        {experienceLevels.map(level => <option key={level.value} value={level.value}>
+                          {level.label}
+                        </option>)}
+                      </select>
+                    </FormField>
+                    <FormField label="Availability Status" required>
+                      <select
+                        value={formData.availability}
+                        onChange={e => handleInputChange("availability", e.target.value)}
+                        className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={mode === "view"}>
+                        {availabilityOptions.map(option => <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>)}
+                      </select>
+                    </FormField>
+                  </div>
+                </div>
+                
+                {/* Skills */}
+                <div>
+                  <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Skills & Expertise</h3>
+                  <FormField label="Skills" required error={errors.skills}>
+                    {(mode === "add" || mode === "edit") && <div className="flex gap-2 mb-3">
+                      <Input
+                        value={newSkill}
+                        onChange={e => setNewSkill(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        placeholder="Add a skill and press Enter"
+                        className="flex-1" />
+                      <Button type="button" onClick={handleAddSkill} variant="outline" size="default">
+                        <ApperIcon name="Plus" size={16} />
+                      </Button>
                     </div>}
-                </form>
-            </div>
-            {/* Footer */}
-<div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
+                    <div className="flex flex-wrap gap-2">
+                      {formData.skills.map(
+                        (skill, index) => <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                          {skill}
+                          {(mode === "add" || mode === "edit") && <button
+                            type="button"
+                            onClick={() => handleRemoveSkill(skill)}
+                            className="ml-1 hover:text-red-500">
+                            <ApperIcon name="X" size={12} />
+                          </button>}
+                        </Badge>
+                      )}
+                      {formData.skills.length === 0 && <p className="text-sm text-gray-500">No skills added yet</p>}
+                    </div>
+                  </FormField>
+                </div>
+                
+                {/* Resume Summary */}
+                <div>
+                  <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Professional Summary</h3>
+                  <FormField label="Resume Summary" required error={errors.resumeSummary}>
+                    <Textarea
+                      value={formData.resumeSummary}
+                      onChange={e => handleInputChange("resumeSummary", e.target.value)}
+                      placeholder="Brief summary of professional background, key achievements, and career objectives..."
+                      rows={4}
+                      error={errors.resumeSummary}
+                      disabled={mode === "view"} />
+                  </FormField>
+                </div>
+
+                {/* Communication Notes */}
+                <div className="border-t border-gray-200 pt-6">
+                  <NotesList
+                    entityType="candidate"
+                    entityId={candidate.Id}
+                    entityName={candidate.name}
+                  />
+                </div>
+
+                {/* Application Status Management */}
+                {(mode === "view" || mode === "edit") && candidate && <div>
+                  <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Application Status</h3>
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Current Status:</span>
+                      <Badge
+                        variant={candidate.status === "new" ? "primary" : candidate.status === "interviewed" ? "secondary" : candidate.status === "hired" ? "active" : "inactive"}>
+                        {candidate.status}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-700">Availability:</span>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${getAvailabilityDisplay(formData.availability).color}`}>
+                        {getAvailabilityDisplay(formData.availability).label}
+                      </span>
+                    </div>
+                  </div>
+                  {/* Application Status Management */}
+                  {candidateApplications && candidateApplications.length > 0 && <div className="space-y-4">
+                    <h4 className="text-base font-medium text-gray-900">Applications</h4>
+                    {candidateApplications.map(
+                      application => <div key={application.Id} className="border border-gray-200 rounded-lg p-4">
+                        <ApplicationStatusPipeline
+                          currentStatus={application.status}
+                          onStatusChange={onStatusChange}
+                          applicationId={application.Id}
+                          showUpdateDropdown={true}
+                          onInterviewSchedule={handleInterviewSchedule} />
+                        <div className="mt-3 pt-3 border-t border-gray-100">
+                          <p className="text-sm text-gray-600">
+                            <span className="font-medium">Applied to:</span> {application.jobTitle || "Unknown Position"}
+                          </p>
+                          <p className="text-sm text-gray-500 mt-1">Applied on {new Date(application.appliedAt).toLocaleDateString()}</p>
+                          {application.interview && (
+                            <div className="mt-2 p-2 bg-purple-50 rounded-lg">
+                              <p className="text-sm font-medium text-purple-800">Interview Scheduled</p>
+                              <p className="text-sm text-purple-600">
+                                {new Date(application.interview.date).toLocaleDateString()} at {application.interview.time}
+                              </p>
+                              <p className="text-sm text-purple-600">
+                                {application.interview.type} with {application.interview.interviewer}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>}
+                </div>}
+              </div>
+              
+              {/* Footer */}
+              <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
                 <Button type="button" variant="ghost" onClick={onClose}>
-                    {mode === "view" ? "Close" : "Cancel"}
+                  {mode === "view" ? "Close" : "Cancel"}
                 </Button>
                 {(mode === "add" || mode === "edit") && (
-                <Button
+                  <Button
                     variant="primary"
                     type="submit"
                     disabled={isSubmitting}
                     className="flex items-center gap-2">
                     {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
                     {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
-</Button>
-)}
-</div>
+                  </Button>
+                )}
+              </div>
+            </form>
         </motion.div>
       </motion.div>
     </AnimatePresence>
-
     {/* Interview Scheduling Modal */}
     <AnimatePresence>
       {showInterviewModal && (
