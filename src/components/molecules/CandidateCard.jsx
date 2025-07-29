@@ -1,11 +1,11 @@
 import React from "react";
-import { Card, CardContent } from "@/components/atoms/Card";
-import Badge from "@/components/atoms/Badge";
-import ApperIcon from "@/components/ApperIcon";
 import { format } from "date-fns";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import { Card, CardContent } from "@/components/atoms/Card";
 import { cn } from "@/utils/cn";
 
-const CandidateCard = ({ candidate, className, onView, onContact }) => {
+const CandidateCard = ({ candidate, className, onView, appliedJobs = [], ...props }) => {
   const getStatusVariant = (status) => {
     switch (status.toLowerCase()) {
       case "new":
@@ -54,19 +54,44 @@ const CandidateCard = ({ candidate, className, onView, onContact }) => {
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => onView?.(candidate)}
-            className="flex-1 px-3 py-2 text-sm font-medium text-primary-600 bg-primary-50 hover:bg-primary-100 rounded-lg transition-colors"
-          >
-            View Profile
-          </button>
-          <button
-            onClick={() => onContact?.(candidate)}
-            className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            <ApperIcon name="MessageSquare" size={16} />
-          </button>
+{/* Applied Jobs Section */}
+        {appliedJobs.length > 0 && (
+          <div className="mb-4 p-3 bg-green-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <ApperIcon name="Briefcase" size={14} className="text-green-600" />
+              <span className="text-sm font-medium text-green-900">
+                Applied to {appliedJobs.length} Jobs
+              </span>
+            </div>
+            <div className="text-xs text-green-700 line-clamp-2">
+              {appliedJobs.slice(0, 2).map(job => job.title).join(', ')}
+              {appliedJobs.length > 2 && ` and ${appliedJobs.length - 2} more`}
+            </div>
+          </div>
+        )}
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center text-xs text-gray-500">
+            <ApperIcon name="Calendar" size={12} className="mr-1" />
+            Applied {format(new Date(candidate.appliedAt), "MMM d")}
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => onView?.(candidate)}
+              className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors"
+              title="View Profile"
+            >
+              <ApperIcon name="Eye" size={14} />
+            </button>
+            <button
+              onClick={() => props.onContact?.(candidate)}
+              className="p-1.5 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
+              title="Contact Candidate"
+            >
+              <ApperIcon name="Phone" size={14} />
+            </button>
+          </div>
         </div>
       </CardContent>
     </Card>

@@ -1,95 +1,127 @@
-import React, { useState, useEffect } from "react";
-import Button from "@/components/atoms/Button";
+import React, { useEffect, useState } from "react";
+import ApplyCandidateModal from "@/components/organisms/ApplyCandidateModal";
+import { applicationService } from "@/services/api/applicationService";
+import { toast } from "react-toastify";
+import { jobService } from "@/services/api/jobService";
+import { candidateService } from "@/services/api/candidateService";
+import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import JobCard from "@/components/molecules/JobCard";
 import JobModal from "@/components/organisms/JobModal";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
-import ApperIcon from "@/components/ApperIcon";
-import { jobService } from "@/services/api/jobService";
-import { toast } from "react-toastify";
-
-const Jobs = () => {
-  const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingJob, setEditingJob] = useState(null);
-
-  const loadJobs = async () => {
-    try {
-      setLoading(true);
-      setError("");
-      const data = await jobService.getAll();
-      setJobs(data);
-    } catch (err) {
-      setError(err.message || "Failed to load jobs");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+import Button from "@/components/atoms/Button";
+function Jobs() {
+  const [jobs, setJobs] = useState([])
+  const [candidates, setCandidates] = useState([])
+  const [applications, setApplications] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false)
+  const [editingJob, setEditingJob] = useState(null)
+  const [selectedJob, setSelectedJob] = useState(null)
+  
   useEffect(() => {
-    loadJobs();
-  }, []);
+    loadJobs()
+  }, [])
 
-const filteredJobs = jobs.filter(job =>
-    job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (job.requiredSkills && job.requiredSkills.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (job.jobType && job.jobType.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+async function loadJobs() {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      const [jobsData, candidatesData, applicationsData] = await Promise.all([
+        jobService.getAll(),
+        candidateService.getAll(),
+        applicationService.getAll()
+      ])
+      
+      setJobs(jobsData)
+      setCandidates(candidatesData)
+      setApplications(applicationsData)
+    } catch (err) {
+      setError('Failed to load jobs. Please try again.')
+      console.error('Error loading jobs:', err)
+    } finally {
+      setLoading(false)
+    }
+}
 
-  const handleCreateJob = () => {
-    setEditingJob(null);
-    setModalOpen(true);
-  };
+  function handleCreateJob() {
+    setEditingJob(null)
+    setIsModalOpen(true)
+  }
 
-  const handleEditJob = (job) => {
-    setEditingJob(job);
-    setModalOpen(true);
-  };
+  function handleEditJob(job) {
+    setEditingJob(job)
+    setIsModalOpen(true)
+  }
 
-  const handleSaveJob = async (jobData) => {
+  function handleApplyCandidate(job) {
+    setSelectedJob(job)
+    setIsApplyModalOpen(true)
+  }
+
+  function handleApplicationCreated(newApplication) {
+    setApplications(prev => [...prev, newApplication])
+    
+    // Update job applicants count
+    setJobs(prev => prev.map(job => 
+      job.Id === newApplication.jobId 
+        ? { ...job, applicants: (job.applicants || 0) + 1 }
+        : job
+    ))
+  }
+async function handleSaveJob(jobData) {
     try {
       if (editingJob) {
-        const updatedJob = await jobService.update(editingJob.Id, jobData);
+        const updatedJob = await jobService.update(editingJob.Id, jobData)
         setJobs(prev => prev.map(job => 
           job.Id === editingJob.Id ? updatedJob : job
-        ));
+        ))
+        toast.success('Job updated successfully!')
       } else {
-        const newJob = await jobService.create(jobData);
-        setJobs(prev => [newJob, ...prev]);
+        const newJob = await jobService.create(jobData)
+        setJobs(prev => [newJob, ...prev])
+        toast.success('Job created successfully!')
       }
-    } catch (err) {
-      throw new Error(err.message || "Failed to save job");
+      setIsModalOpen(false)
+      setEditingJob(null)
+    } catch (error) {
+      throw error
     }
-  };
-
-  const handleDeleteJob = async (job) => {
-    if (window.confirm(`Are you sure you want to delete "${job.title}"?`)) {
-      try {
-        await jobService.delete(job.Id);
-        setJobs(prev => prev.filter(j => j.Id !== job.Id));
-        toast.success("Job deleted successfully!");
-      } catch (err) {
-        toast.error("Failed to delete job");
-      }
-    }
-  };
-
-  if (loading) {
-    return <Loading variant="grid" />;
   }
 
-  if (error) {
-    return <Error message={error} onRetry={loadJobs} />;
+  async function handleDeleteJob(job) {
+    if (!window.confirm(`Are you sure you want to delete "${job.title}"?`)) {
+      return
+    }
+
+    try {
+      await jobService.delete(job.Id)
+      setJobs(prev => prev.filter(j => j.Id !== job.Id))
+      toast.success('Job deleted successfully!')
+    } catch (error) {
+      toast.error(error.message || 'Failed to delete job')
+}
   }
 
+  const getAppliedCandidatesForJob = (jobId) => {
+    const jobApplications = applications.filter(app => app.jobId === jobId)
+    return jobApplications.map(app => 
+      candidates.find(candidate => candidate.Id === app.candidateId)
+    ).filter(Boolean)
+  }
+
+  const filteredJobs = jobs.filter(job => {
+    const searchLower = searchTerm.toLowerCase()
+    return job.title.toLowerCase().includes(searchLower) ||
+           job.company.toLowerCase().includes(searchLower) ||
+job.description.toLowerCase().includes(searchLower)
+  })
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -117,8 +149,12 @@ const filteredJobs = jobs.filter(job =>
         />
       </div>
 
-      {/* Jobs Grid */}
-      {filteredJobs.length === 0 ? (
+{/* Jobs Grid */}
+      {loading ? (
+        <Loading />
+      ) : error ? (
+        <Error message={error} onRetry={loadJobs} />
+      ) : filteredJobs.length === 0 ? (
         <Empty
           title="No jobs found"
           description={searchTerm ? "Try adjusting your search terms." : "Create your first job posting to get started."}
@@ -127,24 +163,33 @@ const filteredJobs = jobs.filter(job =>
           onAction={!searchTerm ? handleCreateJob : undefined}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredJobs.map((job) => (
             <JobCard
               key={job.Id}
               job={job}
               onEdit={handleEditJob}
               onDelete={handleDeleteJob}
+              onApplyCandidate={handleApplyCandidate}
+              appliedCandidates={getAppliedCandidatesForJob(job.Id)}
             />
           ))}
         </div>
       )}
+    </div>
 
-      {/* Job Modal */}
       <JobModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSave={handleSaveJob}
         job={editingJob}
+      />
+
+<ApplyCandidateModal
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        job={selectedJob}
+        onApplicationCreated={handleApplicationCreated}
       />
     </div>
   );

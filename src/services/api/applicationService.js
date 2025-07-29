@@ -1,0 +1,128 @@
+import applicationsData from '@/services/mockData/applications.json';
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+const applications = [...applicationsData];
+let nextId = Math.max(...applications.map(app => app.Id), 0) + 1;
+
+export const applicationService = {
+  async getAll() {
+    await delay(300);
+    return [...applications];
+  },
+
+  async getById(id) {
+    await delay(200);
+    if (typeof id !== 'number') {
+      throw new Error('Application ID must be a number');
+    }
+    
+    const application = applications.find(app => app.Id === id);
+    if (!application) {
+      throw new Error('Application not found');
+    }
+    
+    return { ...application };
+  },
+
+  async getByJobId(jobId) {
+    await delay(200);
+    if (typeof jobId !== 'number') {
+      throw new Error('Job ID must be a number');
+    }
+    
+    return applications
+      .filter(app => app.jobId === jobId)
+      .map(app => ({ ...app }));
+  },
+
+  async getByCandidateId(candidateId) {
+    await delay(200);
+    if (typeof candidateId !== 'number') {
+      throw new Error('Candidate ID must be a number');
+    }
+    
+    return applications
+      .filter(app => app.candidateId === candidateId)
+      .map(app => ({ ...app }));
+  },
+
+  async create(applicationData) {
+    await delay(500);
+    
+    // Validate required fields
+    if (!applicationData.jobId || !applicationData.candidateId) {
+      throw new Error('Job ID and Candidate ID are required');
+    }
+
+    // Check if application already exists
+    const existingApp = applications.find(
+      app => app.jobId === applicationData.jobId && app.candidateId === applicationData.candidateId
+    );
+    
+    if (existingApp) {
+      throw new Error('Candidate has already been applied to this job');
+    }
+
+    const newApplication = {
+      Id: nextId++,
+      jobId: applicationData.jobId,
+      candidateId: applicationData.candidateId,
+      appliedAt: new Date().toISOString(),
+      status: 'applied',
+      notes: applicationData.notes || ''
+    };
+
+    applications.push(newApplication);
+    return { ...newApplication };
+  },
+
+  async update(id, applicationData) {
+    await delay(400);
+    
+    if (typeof id !== 'number') {
+      throw new Error('Application ID must be a number');
+    }
+
+    const index = applications.findIndex(app => app.Id === id);
+    if (index === -1) {
+      throw new Error('Application not found');
+    }
+
+    const updatedApplication = {
+      ...applications[index],
+      ...applicationData,
+      Id: applications[index].Id // Preserve original ID
+    };
+
+    applications[index] = updatedApplication;
+    return { ...updatedApplication };
+  },
+
+  async delete(id) {
+    await delay(300);
+    
+    if (typeof id !== 'number') {
+      throw new Error('Application ID must be a number');
+    }
+
+    const index = applications.findIndex(app => app.Id === id);
+    if (index === -1) {
+      throw new Error('Application not found');
+    }
+
+    const deletedApplication = { ...applications[index] };
+    applications.splice(index, 1);
+    return deletedApplication;
+  },
+
+  async checkApplication(jobId, candidateId) {
+    await delay(100);
+    
+    return applications.find(
+      app => app.jobId === jobId && app.candidateId === candidateId
+    ) || null;
+  }
+};

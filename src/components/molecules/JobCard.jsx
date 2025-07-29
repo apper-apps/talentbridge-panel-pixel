@@ -1,11 +1,12 @@
 import React from "react";
 import { Card, CardContent } from "@/components/atoms/Card";
 import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
 import ApperIcon from "@/components/ApperIcon";
 import { format } from "date-fns";
 import { cn } from "@/utils/cn";
 
-const JobCard = ({ job, className, onEdit, onDelete }) => {
+const JobCard = ({ job, className, onEdit, onDelete, onApplyCandidate, appliedCandidates = [] }) => {
   const getStatusVariant = (status) => {
     switch (status.toLowerCase()) {
       case "active":
@@ -54,8 +55,19 @@ const JobCard = ({ job, className, onEdit, onDelete }) => {
                 </Badge>
               )}
             </div>
-          </div>
+</div>
           <div className="flex items-center space-x-2">
+            {job.status === 'active' && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onApplyCandidate?.(job)}
+                className="flex items-center gap-2"
+              >
+                <ApperIcon name="UserPlus" size={14} />
+                Apply Candidate
+              </Button>
+            )}
             <button
               onClick={() => onEdit?.(job)}
               className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
@@ -105,6 +117,22 @@ const JobCard = ({ job, className, onEdit, onDelete }) => {
               )}
             </div>
           </div>
+)}
+        
+        {/* Applied Candidates Section */}
+        {appliedCandidates.length > 0 && (
+          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <ApperIcon name="Users" size={14} className="text-blue-600" />
+              <span className="text-sm font-medium text-blue-900">
+                {appliedCandidates.length} Applied Candidates
+              </span>
+            </div>
+            <div className="text-xs text-blue-700 line-clamp-2">
+              {appliedCandidates.slice(0, 3).map(candidate => candidate.name).join(', ')}
+              {appliedCandidates.length > 3 && ` and ${appliedCandidates.length - 3} more`}
+            </div>
+          </div>
         )}
         
         <div className="flex items-center justify-between text-xs text-gray-500">
@@ -114,7 +142,7 @@ const JobCard = ({ job, className, onEdit, onDelete }) => {
           </div>
           <div className="flex items-center">
             <ApperIcon name="Users" size={14} className="mr-1" />
-            {job.applicants || 0} applicants
+            {appliedCandidates.length} applied candidates
           </div>
         </div>
       </CardContent>
