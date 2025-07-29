@@ -171,10 +171,10 @@ const loadDashboardData = async () => {
                         key={candidate.Id}
                         className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border border-gray-100 hover:shadow-md transition-all duration-200">
                         <div className="flex items-center space-x-3">
-                            <div
+<div
                                 className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center shadow-lg">
                                 <span className="text-white font-semibold text-sm">
-                                    {candidate.name.charAt(0).toUpperCase()}
+                                    {(candidate.name?.charAt(0) || '?').toUpperCase()}
                                 </span>
                             </div>
                             <div className="flex-1">
