@@ -404,13 +404,16 @@ return (
                   </FormField>
                 </div>
 
-                {/* Communication Notes */}
-                <div className="border-t border-gray-200 pt-6">
-                  <NotesList
-                    entityType="candidate"
-                    entityId={candidate.Id}
-                    entityName={candidate.name}
-                  />
+{/* Communication Notes */}
+                {candidate && candidate.Id && (
+                  <div className="border-t border-gray-200 pt-6">
+                    <NotesList
+                      entityType="candidate"
+                      entityId={candidate.Id}
+                      entityName={candidate.name}
+                    />
+                  </div>
+                )}
                 </div>
 
                 {/* Application Status Management */}
@@ -480,12 +483,12 @@ return (
                     {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
                     {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
                   </Button>
-                )}
+)}
               </div>
             </form>
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>
+      </AnimatePresence>
     {/* Interview Scheduling Modal */}
     <AnimatePresence>
       {showInterviewModal && (
