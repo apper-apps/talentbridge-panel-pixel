@@ -457,7 +457,7 @@ const CandidateProfileModal = ({
                 {isSubmitting ? "Adding..." : "Add Candidate"}
               </Button>
             )}
-          </div>
+</div>
         </motion.div>
       </motion.div>
     </AnimatePresence>

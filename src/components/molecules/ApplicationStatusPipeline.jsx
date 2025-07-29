@@ -7,6 +7,7 @@ const ApplicationStatusPipeline = ({
   onStatusChange, 
   applicationId, 
   showUpdateDropdown = false,
+  onInterviewSchedule,
   className 
 }) => {
   const statusStages = [
@@ -135,8 +136,7 @@ const ApplicationStatusPipeline = ({
           );
         })}
       </div>
-
-      {/* Status Update Dropdown */}
+{/* Status Update Dropdown */}
       {showUpdateDropdown && onStatusChange && applicationId && (
         <div className="pt-2 border-t">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -153,10 +153,22 @@ const ApplicationStatusPipeline = ({
               </option>
             ))}
           </select>
+          
+          {/* Interview Scheduling Trigger */}
+          {currentStatus === 'interview_scheduled' && onInterviewSchedule && (
+            <div className="mt-2">
+              <button
+                onClick={() => onInterviewSchedule(applicationId)}
+                className="w-full px-3 py-2 text-sm bg-purple-50 text-purple-700 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors flex items-center justify-center gap-2"
+              >
+                <ApperIcon name="Calendar" size={16} />
+                Schedule Interview Details
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 };
-
 export default ApplicationStatusPipeline;

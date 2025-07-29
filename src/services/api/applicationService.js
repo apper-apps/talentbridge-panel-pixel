@@ -1,4 +1,5 @@
 import applicationsData from "@/services/mockData/applications.json";
+
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -65,9 +66,9 @@ export const applicationService = {
       throw new Error('Candidate has already been applied to this job');
     }
 
-    const newApplication = {
+const newApplication = {
       Id: nextId++,
-jobId: applicationData.jobId,
+      jobId: applicationData.jobId,
       candidateId: applicationData.candidateId,
       appliedAt: new Date().toISOString(),
       status: 'applied',
@@ -135,11 +136,94 @@ jobId: applicationData.jobId,
     return deletedApplication;
   },
 
-  async checkApplication(jobId, candidateId) {
+async checkApplication(jobId, candidateId) {
     await delay(100);
     
     return applications.find(
       app => app.jobId === jobId && app.candidateId === candidateId
     ) || null;
+  },
+
+  // Schedule interview for an application
+  async scheduleInterview(applicationId, interviewData) {
+    await delay(400);
+    
+    if (typeof applicationId !== 'number') {
+      throw new Error('Application ID must be a number');
+    }
+
+    const applicationIndex = applications.findIndex(app => app.Id === applicationId);
+    if (applicationIndex === -1) {
+      throw new Error('Application not found');
+    }
+
+    // Validate interview data
+    const { date, time, interviewer, type, notes } = interviewData;
+    if (!date || !time || !interviewer || !type) {
+      throw new Error('Date, time, interviewer, and type are required');
+    }
+
+    const validTypes = ['Phone', 'Video', 'In-person'];
+    if (!validTypes.includes(type)) {
+      throw new Error('Invalid interview type');
+    }
+
+    applications[applicationIndex].interview = {
+      date,
+      time,
+      interviewer,
+      type,
+      notes: notes || ''
+    };
+
+    // Ensure status is interview_scheduled
+    applications[applicationIndex].status = 'interview_scheduled';
+
+    return { ...applications[applicationIndex] };
+  },
+
+  // Update interview details
+  async updateInterview(applicationId, interviewData) {
+    await delay(400);
+    
+    if (typeof applicationId !== 'number') {
+      throw new Error('Application ID must be a number');
+    }
+
+    const applicationIndex = applications.findIndex(app => app.Id === applicationId);
+    if (applicationIndex === -1) {
+      throw new Error('Application not found');
+    }
+
+    if (!applications[applicationIndex].interview) {
+      throw new Error('No interview scheduled for this application');
+    }
+
+    applications[applicationIndex].interview = {
+      ...applications[applicationIndex].interview,
+      ...interviewData
+    };
+
+    return { ...applications[applicationIndex] };
+  },
+
+  // Get upcoming interviews
+  async getUpcomingInterviews() {
+    await delay(200);
+    
+    const now = new Date();
+    const upcomingInterviews = applications
+      .filter(app => app.interview && app.status === 'interview_scheduled')
+      .map(app => ({
+        ...app,
+        interviewDateTime: new Date(`${app.interview.date}T${app.interview.time}`)
+      }))
+      .filter(app => app.interviewDateTime >= now)
+      .sort((a, b) => a.interviewDateTime - b.interviewDateTime);
+
+    return upcomingInterviews.map(app => {
+      const { interviewDateTime, ...rest } = app;
+      return rest;
+    });
   }
 };

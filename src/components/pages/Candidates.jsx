@@ -81,8 +81,22 @@ setError(null)
       toast.error(error.message || 'Failed to add candidate')
       throw error
     }
-  }
+}
 
+  async function handleApplicationUpdate(applicationId, updates) {
+    try {
+      await applicationService.update(applicationId, updates)
+      
+      // Reload applications to get updated data
+      const updatedApplications = await applicationService.getAll()
+      setApplications(updatedApplications)
+      
+      toast.success('Application updated successfully!')
+    } catch (error) {
+      toast.error(error.message || 'Failed to update application')
+      console.error('Failed to update application:', error)
+    }
+  }
   const getAppliedJobsForCandidate = (candidateId) => {
     const candidateApplications = applications.filter(app => app.candidateId === candidateId)
     return candidateApplications.map(app => 
@@ -211,12 +225,14 @@ Add Candidate
         </div>
       )}
 
-      {/* View Candidate Modal */}
+{/* View Candidate Modal */}
       <CandidateProfileModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         candidate={selectedCandidate}
         mode={modalMode}
+        candidateApplications={selectedCandidate ? getAppliedJobsForCandidate(selectedCandidate.Id) : []}
+        onApplicationUpdate={handleApplicationUpdate}
       />
 
       {/* Add Candidate Modal */}
