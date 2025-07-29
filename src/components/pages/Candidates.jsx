@@ -152,10 +152,10 @@ const Candidates = () => {
               onContact={handleContactCandidate}
             />
           ))}
-        </div>
+</div>
       )}
-)}
     </div>
+  );
 };
 
 export default Candidates;
