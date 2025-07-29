@@ -4,6 +4,7 @@ import { applicationService } from "@/services/api/applicationService";
 import { toast } from "react-toastify";
 import { jobService } from "@/services/api/jobService";
 import { candidateService } from "@/services/api/candidateService";
+import { clientService } from "@/services/api/clientService";
 import ApperIcon from "@/components/ApperIcon";
 import SearchBar from "@/components/molecules/SearchBar";
 import JobCard from "@/components/molecules/JobCard";
@@ -15,7 +16,8 @@ import Button from "@/components/atoms/Button";
 function Jobs() {
   const [jobs, setJobs] = useState([])
   const [candidates, setCandidates] = useState([])
-  const [applications, setApplications] = useState([])
+const [applications, setApplications] = useState([])
+  const [clients, setClients] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -33,22 +35,24 @@ async function loadJobs() {
     setError(null)
     
     try {
-      const [jobsData, candidatesData, applicationsData] = await Promise.all([
+      const [jobsData, candidatesData, applicationsData, clientsData] = await Promise.all([
         jobService.getAll(),
         candidateService.getAll(),
-        applicationService.getAll()
+        applicationService.getAll(),
+        clientService.getAll()
       ])
       
       setJobs(jobsData)
       setCandidates(candidatesData)
       setApplications(applicationsData)
+      setClients(clientsData)
     } catch (err) {
       setError('Failed to load jobs. Please try again.')
       console.error('Error loading jobs:', err)
     } finally {
       setLoading(false)
     }
-}
+  }
 
   function handleCreateJob() {
     setEditingJob(null)
@@ -77,14 +81,21 @@ async function loadJobs() {
   }
 async function handleSaveJob(jobData) {
     try {
+      // Find client company name from clientId
+      const client = clients.find(c => c.Id === parseInt(jobData.clientId))
+      const jobWithClient = {
+        ...jobData,
+        company: client ? client.companyName : jobData.company
+      }
+      
       if (editingJob) {
-        const updatedJob = await jobService.update(editingJob.Id, jobData)
+        const updatedJob = await jobService.update(editingJob.Id, jobWithClient)
         setJobs(prev => prev.map(job => 
           job.Id === editingJob.Id ? updatedJob : job
         ))
         toast.success('Job updated successfully!')
       } else {
-        const newJob = await jobService.create(jobData)
+        const newJob = await jobService.create(jobWithClient)
         setJobs(prev => [newJob, ...prev])
         toast.success('Job created successfully!')
       }
@@ -116,11 +127,13 @@ async function handleSaveJob(jobData) {
     ).filter(Boolean)
   }
 
-  const filteredJobs = jobs.filter(job => {
+const filteredJobs = jobs.filter(job => {
     const searchLower = searchTerm.toLowerCase()
+    const client = clients.find(c => c.companyName === job.company)
     return job.title.toLowerCase().includes(searchLower) ||
            job.company.toLowerCase().includes(searchLower) ||
-job.description.toLowerCase().includes(searchLower)
+           job.description.toLowerCase().includes(searchLower) ||
+           (client?.contactPerson?.toLowerCase().includes(searchLower))
   })
   return (
     <div className="space-y-6">
@@ -177,11 +190,12 @@ job.description.toLowerCase().includes(searchLower)
 </div>
       )}
 
-      <JobModal
+<JobModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveJob}
         job={editingJob}
+        clients={clients}
       />
 
       <ApplyCandidateModal

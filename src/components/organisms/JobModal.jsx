@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Button from "@/components/atoms/Button";
-import Input from "@/components/atoms/Input";
-import Textarea from "@/components/atoms/Textarea";
-import FormField from "@/components/molecules/FormField";
-import ApperIcon from "@/components/ApperIcon";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
+import Textarea from "@/components/atoms/Textarea";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
 
-const JobModal = ({ isOpen, onClose, onSave, job = null }) => {
+const JobModal = ({ isOpen, onClose, onSave, job = null, clients = [] }) => {
 const [formData, setFormData] = useState({
     title: "",
+    clientId: "",
     company: "",
     location: "",
     jobType: "Full-time",
@@ -23,10 +24,13 @@ const [formData, setFormData] = useState({
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
+useEffect(() => {
     if (job) {
+      // Find client by company name
+      const client = clients.find(c => c.companyName === job.company)
       setFormData({
         title: job.title || "",
+        clientId: client ? client.Id.toString() : "",
         company: job.company || "",
         location: job.location || "",
         jobType: job.jobType || "Full-time",
@@ -37,9 +41,10 @@ const [formData, setFormData] = useState({
         description: job.description || "",
         status: job.status || "active"
       });
-    } else {
+} else {
       setFormData({
         title: "",
+        clientId: "",
         company: "",
         location: "",
         jobType: "Full-time",
@@ -61,8 +66,8 @@ const validateForm = () => {
       newErrors.title = "Job title is required";
     }
     
-    if (!formData.company.trim()) {
-      newErrors.company = "Company name is required";
+    if (!formData.clientId && !formData.company.trim()) {
+      newErrors.clientId = "Please select a client or enter company name";
     }
     
     if (!formData.location.trim()) {
@@ -163,17 +168,34 @@ const validateForm = () => {
                     />
                   </FormField>
 
-                  <FormField
-                    label="Company"
+<FormField
+                    label="Client Company"
                     required
-                    error={errors.company}
+                    error={errors.clientId}
                   >
-                    <Input
-                      placeholder="e.g. Tech Corp Inc."
-                      value={formData.company}
-                      onChange={(e) => handleInputChange("company", e.target.value)}
-                      error={errors.company}
-                    />
+                    <select
+                      value={formData.clientId}
+                      onChange={(e) => {
+                        handleInputChange("clientId", e.target.value)
+                        const selectedClient = clients.find(c => c.Id.toString() === e.target.value)
+                        if (selectedClient) {
+                          handleInputChange("company", selectedClient.companyName)
+                        }
+                      }}
+                      className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    >
+                      <option value="">Select a client...</option>
+                      {clients.filter(c => c.relationshipStatus === 'active').map((client) => (
+                        <option key={client.Id} value={client.Id}>
+                          {client.companyName}
+                        </option>
+                      ))}
+                    </select>
+                    {formData.clientId && (
+                      <div className="mt-2 text-xs text-gray-600">
+                        Contact: {clients.find(c => c.Id.toString() === formData.clientId)?.contactPerson}
+                      </div>
+                    )}
                   </FormField>
                 </div>
 

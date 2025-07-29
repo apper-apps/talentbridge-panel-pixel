@@ -4,6 +4,7 @@ import Layout from "@/components/organisms/Layout";
 import Dashboard from "@/components/pages/Dashboard";
 import Jobs from "@/components/pages/Jobs";
 import Candidates from "@/components/pages/Candidates";
+import Clients from "@/components/pages/Clients";
 
 function App() {
   return (
@@ -13,7 +14,8 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="jobs" element={<Jobs />} />
-            <Route path="candidates" element={<Candidates />} />
+<Route path="candidates" element={<Candidates />} />
+            <Route path="clients" element={<Clients />} />
           </Route>
         </Routes>
         <ToastContainer
