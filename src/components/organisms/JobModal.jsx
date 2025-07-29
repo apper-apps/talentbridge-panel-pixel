@@ -8,9 +8,15 @@ import ApperIcon from "@/components/ApperIcon";
 import { toast } from "react-toastify";
 
 const JobModal = ({ isOpen, onClose, onSave, job = null }) => {
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     title: "",
     company: "",
+    location: "",
+    jobType: "Full-time",
+    salaryMin: "",
+    salaryMax: "",
+    requiredSkills: "",
+    experienceLevel: "Mid-level",
     description: "",
     status: "active"
   });
@@ -22,6 +28,12 @@ const JobModal = ({ isOpen, onClose, onSave, job = null }) => {
       setFormData({
         title: job.title || "",
         company: job.company || "",
+        location: job.location || "",
+        jobType: job.jobType || "Full-time",
+        salaryMin: job.salaryMin || "",
+        salaryMax: job.salaryMax || "",
+        requiredSkills: job.requiredSkills || "",
+        experienceLevel: job.experienceLevel || "Mid-level",
         description: job.description || "",
         status: job.status || "active"
       });
@@ -29,6 +41,12 @@ const JobModal = ({ isOpen, onClose, onSave, job = null }) => {
       setFormData({
         title: "",
         company: "",
+        location: "",
+        jobType: "Full-time",
+        salaryMin: "",
+        salaryMax: "",
+        requiredSkills: "",
+        experienceLevel: "Mid-level",
         description: "",
         status: "active"
       });
@@ -36,7 +54,7 @@ const JobModal = ({ isOpen, onClose, onSave, job = null }) => {
     setErrors({});
   }, [job, isOpen]);
 
-  const validateForm = () => {
+const validateForm = () => {
     const newErrors = {};
     
     if (!formData.title.trim()) {
@@ -47,8 +65,25 @@ const JobModal = ({ isOpen, onClose, onSave, job = null }) => {
       newErrors.company = "Company name is required";
     }
     
+    if (!formData.location.trim()) {
+      newErrors.location = "Location is required";
+    }
+    
+    if (!formData.requiredSkills.trim()) {
+      newErrors.requiredSkills = "Required skills are required";
+    }
+    
     if (!formData.description.trim()) {
       newErrors.description = "Job description is required";
+    }
+    
+    // Validate salary range if provided
+    if (formData.salaryMin && formData.salaryMax) {
+      const min = parseFloat(formData.salaryMin);
+      const max = parseFloat(formData.salaryMax);
+      if (min >= max) {
+        newErrors.salaryMax = "Maximum salary must be greater than minimum";
+      }
     }
     
     setErrors(newErrors);
@@ -113,46 +148,137 @@ const JobModal = ({ isOpen, onClose, onSave, job = null }) => {
                 </button>
               </div>
 
-              <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                <FormField
-                  label="Job Title"
-                  required
-                  error={errors.title}
-                >
-                  <Input
-                    placeholder="e.g. Senior Software Engineer"
-                    value={formData.title}
-                    onChange={(e) => handleInputChange("title", e.target.value)}
+<form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    label="Job Title"
+                    required
                     error={errors.title}
-                  />
-                </FormField>
-
-                <FormField
-                  label="Company"
-                  required
-                  error={errors.company}
-                >
-                  <Input
-                    placeholder="e.g. Tech Corp Inc."
-                    value={formData.company}
-                    onChange={(e) => handleInputChange("company", e.target.value)}
-                    error={errors.company}
-                  />
-                </FormField>
-
-                <FormField
-                  label="Status"
-                >
-                  <select
-                    value={formData.status}
-                    onChange={(e) => handleInputChange("status", e.target.value)}
-                    className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                   >
-                    <option value="active">Active</option>
-                    <option value="draft">Draft</option>
-                    <option value="closed">Closed</option>
-                  </select>
-                </FormField>
+                    <Input
+                      placeholder="e.g. Senior Software Engineer"
+                      value={formData.title}
+                      onChange={(e) => handleInputChange("title", e.target.value)}
+                      error={errors.title}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Company"
+                    required
+                    error={errors.company}
+                  >
+                    <Input
+                      placeholder="e.g. Tech Corp Inc."
+                      value={formData.company}
+                      onChange={(e) => handleInputChange("company", e.target.value)}
+                      error={errors.company}
+                    />
+                  </FormField>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    label="Location"
+                    required
+                    error={errors.location}
+                  >
+                    <Input
+                      placeholder="e.g. San Francisco, CA"
+                      value={formData.location}
+                      onChange={(e) => handleInputChange("location", e.target.value)}
+                      error={errors.location}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Job Type"
+                  >
+                    <select
+                      value={formData.jobType}
+                      onChange={(e) => handleInputChange("jobType", e.target.value)}
+                      className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    >
+                      <option value="Full-time">Full-time</option>
+                      <option value="Part-time">Part-time</option>
+                      <option value="Contract">Contract</option>
+                      <option value="Internship">Internship</option>
+                      <option value="Remote">Remote</option>
+                    </select>
+                  </FormField>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    label="Minimum Salary ($)"
+                  >
+                    <Input
+                      type="number"
+                      placeholder="e.g. 80000"
+                      value={formData.salaryMin}
+                      onChange={(e) => handleInputChange("salaryMin", e.target.value)}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Maximum Salary ($)"
+                    error={errors.salaryMax}
+                  >
+                    <Input
+                      type="number"
+                      placeholder="e.g. 120000"
+                      value={formData.salaryMax}
+                      onChange={(e) => handleInputChange("salaryMax", e.target.value)}
+                      error={errors.salaryMax}
+                    />
+                  </FormField>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    label="Required Skills"
+                    required
+                    error={errors.requiredSkills}
+                  >
+                    <Input
+                      placeholder="e.g. React, Node.js, TypeScript"
+                      value={formData.requiredSkills}
+                      onChange={(e) => handleInputChange("requiredSkills", e.target.value)}
+                      error={errors.requiredSkills}
+                    />
+                  </FormField>
+
+                  <FormField
+                    label="Experience Level"
+                  >
+                    <select
+                      value={formData.experienceLevel}
+                      onChange={(e) => handleInputChange("experienceLevel", e.target.value)}
+                      className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    >
+                      <option value="Entry-level">Entry-level</option>
+                      <option value="Mid-level">Mid-level</option>
+                      <option value="Senior-level">Senior-level</option>
+                      <option value="Executive">Executive</option>
+                    </select>
+                  </FormField>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    label="Status"
+                  >
+                    <select
+                      value={formData.status}
+                      onChange={(e) => handleInputChange("status", e.target.value)}
+                      className="flex h-10 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                    >
+                      <option value="active">Active</option>
+                      <option value="draft">Draft</option>
+                      <option value="closed">Closed</option>
+                    </select>
+                  </FormField>
+                </div>
 
                 <FormField
                   label="Job Description"
@@ -160,11 +286,11 @@ const JobModal = ({ isOpen, onClose, onSave, job = null }) => {
                   error={errors.description}
                 >
                   <Textarea
-                    placeholder="Describe the role, responsibilities, and requirements..."
+                    placeholder="Describe the role, responsibilities, requirements, and what makes this opportunity exciting..."
                     value={formData.description}
                     onChange={(e) => handleInputChange("description", e.target.value)}
                     error={errors.description}
-                    rows={4}
+                    rows={5}
                   />
                 </FormField>
 

@@ -19,11 +19,13 @@ export const jobService = {
     return { ...job };
   },
 
-  async create(jobData) {
+async create(jobData) {
     await delay(400);
     const newJob = {
       Id: Math.max(...jobs.map(j => j.Id), 0) + 1,
       ...jobData,
+      salaryMin: jobData.salaryMin ? parseInt(jobData.salaryMin) : null,
+      salaryMax: jobData.salaryMax ? parseInt(jobData.salaryMax) : null,
       createdAt: new Date().toISOString(),
       applicants: 0
     };
@@ -37,7 +39,12 @@ export const jobService = {
     if (index === -1) {
       throw new Error("Job not found");
     }
-    jobs[index] = { ...jobs[index], ...updateData };
+    const updatedData = {
+      ...updateData,
+      salaryMin: updateData.salaryMin ? parseInt(updateData.salaryMin) : null,
+      salaryMax: updateData.salaryMax ? parseInt(updateData.salaryMax) : null,
+    };
+    jobs[index] = { ...jobs[index], ...updatedData };
     return { ...jobs[index] };
   },
 

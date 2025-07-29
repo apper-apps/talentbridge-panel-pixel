@@ -35,10 +35,13 @@ const Jobs = () => {
     loadJobs();
   }, []);
 
-  const filteredJobs = jobs.filter(job =>
+const filteredJobs = jobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    job.description.toLowerCase().includes(searchTerm.toLowerCase())
+    job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (job.location && job.location.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (job.requiredSkills && job.requiredSkills.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (job.jobType && job.jobType.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleCreateJob = () => {

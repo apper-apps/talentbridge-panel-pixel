@@ -20,17 +20,40 @@ const JobCard = ({ job, className, onEdit, onDelete }) => {
   };
 
   return (
-    <Card className={cn("hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]", className)}>
+<Card className={cn("hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]", className)}>
       <CardContent className="p-6">
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <h3 className="text-lg font-semibold font-display text-gray-900 mb-1">
               {job.title}
             </h3>
-            <p className="text-sm text-gray-600 mb-2">{job.company}</p>
-            <Badge variant={getStatusVariant(job.status)}>
-              {job.status}
-            </Badge>
+            <div className="flex items-center text-sm text-gray-600 mb-2">
+              <span className="font-medium">{job.company}</span>
+              {job.location && (
+                <>
+                  <span className="mx-2">•</span>
+                  <div className="flex items-center">
+                    <ApperIcon name="MapPin" size={14} className="mr-1" />
+                    {job.location}
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2 mb-3">
+              <Badge variant={getStatusVariant(job.status)}>
+                {job.status}
+              </Badge>
+              {job.jobType && (
+                <Badge variant="secondary">
+                  {job.jobType}
+                </Badge>
+              )}
+              {job.experienceLevel && (
+                <Badge variant="outline">
+                  {job.experienceLevel}
+                </Badge>
+              )}
+            </div>
           </div>
           <div className="flex items-center space-x-2">
             <button
@@ -48,9 +71,41 @@ const JobCard = ({ job, className, onEdit, onDelete }) => {
           </div>
         </div>
         
+        {(job.salaryMin || job.salaryMax) && (
+          <div className="flex items-center mb-3 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">
+            <ApperIcon name="DollarSign" size={14} className="mr-1" />
+            {job.salaryMin && job.salaryMax 
+              ? `$${parseInt(job.salaryMin).toLocaleString()} - $${parseInt(job.salaryMax).toLocaleString()}`
+              : job.salaryMin 
+                ? `From $${parseInt(job.salaryMin).toLocaleString()}`
+                : `Up to $${parseInt(job.salaryMax).toLocaleString()}`
+            }
+          </div>
+        )}
+        
         <p className="text-sm text-gray-600 mb-4 line-clamp-2">
           {job.description}
         </p>
+        
+        {job.requiredSkills && (
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-1">
+              {job.requiredSkills.split(',').slice(0, 3).map((skill, index) => (
+                <span
+                  key={index}
+                  className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-md"
+                >
+                  {skill.trim()}
+                </span>
+              ))}
+              {job.requiredSkills.split(',').length > 3 && (
+                <span className="text-xs text-gray-500 px-2 py-1">
+                  +{job.requiredSkills.split(',').length - 3} more
+                </span>
+              )}
+            </div>
+          </div>
+        )}
         
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center">
