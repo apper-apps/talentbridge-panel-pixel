@@ -231,18 +231,31 @@ export const candidateService = {
     }
   },
 
-  async delete(id) {
+async delete(id) {
     try {
+      // Validate ID parameter
+      if (!id || id === null || id === undefined) {
+        console.error("Error deleting candidate: Invalid ID provided");
+        toast.error("Invalid candidate ID provided");
+        return false;
+      }
+
       const { ApperClient } = window.ApperSDK;
       const apperClient = new ApperClient({
         apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
         apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
       });
 
-      const params = {
-        RecordIds: [parseInt(id)]
-      };
+      const parsedId = parseInt(id);
+      if (isNaN(parsedId)) {
+        console.error("Error deleting candidate: Invalid ID format");
+        toast.error("Invalid candidate ID format");
+        return false;
+      }
 
+      const params = {
+        RecordIds: [parsedId]
+      };
       const response = await apperClient.deleteRecord('candidate', params);
       
       if (!response.success) {
