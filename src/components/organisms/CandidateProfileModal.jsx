@@ -15,6 +15,7 @@ const CandidateProfileModal = ({
   isOpen, 
   onClose, 
   onSave, 
+  onDelete,
   candidate = null, 
   mode = "add", // "add", "view", or "edit"
   candidateApplications = [],
@@ -149,7 +150,9 @@ const handleSubmit = async (e) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
+};
+
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleInterviewSchedule = (applicationId) => {
     setSelectedApplicationId(applicationId);
@@ -475,22 +478,51 @@ return (
               </div>
             )}
 
-            {/* Footer */}
-            <div className="flex items-center justify-end gap-3 p-6 border-t bg-gray-50">
-              <Button type="button" variant="ghost" onClick={onClose}>
-                {mode === "view" ? "Close" : "Cancel"}
-              </Button>
-              {(mode === "add" || mode === "edit") && (
-                <Button
-                  variant="primary"
-                  type="submit"
-                  form="candidate-form"
-                  disabled={isSubmitting}
-                  className="flex items-center gap-2">
-                  {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
-                  {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
+{/* Footer */}
+            <div className="flex items-center justify-between p-6 border-t bg-gray-50">
+              <div>
+                {(mode === "view" || mode === "edit") && candidate && onDelete && (
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    onClick={async () => {
+                      if (confirm('Are you sure you want to delete this candidate? This action cannot be undone.')) {
+                        setIsDeleting(true);
+                        try {
+                          await onDelete(candidate.Id);
+                          toast.success('Candidate deleted successfully!');
+                          onClose();
+                        } catch (error) {
+                          toast.error(error.message || 'Failed to delete candidate');
+                        } finally {
+                          setIsDeleting(false);
+                        }
+                      }
+                    }}
+                    disabled={isDeleting || isSubmitting}
+                    className="flex items-center gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    {isDeleting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </Button>
+                )}
+              </div>
+              <div className="flex items-center gap-3">
+                <Button type="button" variant="ghost" onClick={onClose}>
+                  {mode === "view" ? "Close" : "Cancel"}
                 </Button>
-              )}
+                {(mode === "add" || mode === "edit") && (
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    form="candidate-form"
+                    disabled={isSubmitting || isDeleting}
+                    className="flex items-center gap-2">
+                    {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
+                    {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
+                  </Button>
+                )}
+              </div>
             </div>
             </motion.div>
           </motion.div>

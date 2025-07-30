@@ -82,7 +82,6 @@ function handleViewCandidate(candidate) {
     toast.info(`Contacting ${candidate.name}...`)
     // In a real app, this might open email client or phone dialer
   }
-
 async function handleAddCandidate(candidateData) {
     try {
       const newCandidate = await candidateService.create(candidateData)
@@ -92,6 +91,19 @@ async function handleAddCandidate(candidateData) {
       }
     } catch (error) {
       toast.error(error.message || 'Failed to add candidate')
+      throw error
+    }
+  }
+
+  async function handleDeleteCandidate(candidateId) {
+    try {
+      const success = await candidateService.delete(candidateId)
+      if (success) {
+        setCandidates(prev => prev.filter(candidate => candidate.Id !== candidateId))
+        toast.success('Candidate deleted successfully!')
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to delete candidate')
       throw error
     }
   }
@@ -295,6 +307,7 @@ Add Candidate
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={modalMode === 'edit' ? handleAddCandidate : undefined}
+        onDelete={handleDeleteCandidate}
         candidate={selectedCandidate}
         mode={modalMode}
         candidateApplications={selectedCandidate ? getCandidateApplications(selectedCandidate.Id) : []}
