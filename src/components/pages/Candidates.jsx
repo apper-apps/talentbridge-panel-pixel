@@ -296,6 +296,7 @@ Add Candidate
               onView={handleViewCandidate}
               onEdit={handleEditCandidate}
               onContact={handleContactCandidate}
+              onDelete={handleDeleteCandidate}
               appliedJobs={getAppliedJobsForCandidate(candidate.Id)}
             />
           ))}

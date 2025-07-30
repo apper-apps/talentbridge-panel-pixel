@@ -98,6 +98,13 @@ const CandidateCard = ({ candidate, className, onView, appliedJobs = [], ...prop
             >
               <ApperIcon name="Phone" size={14} />
             </button>
+            <button
+              onClick={() => props.onDelete?.(candidate)}
+              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+              title="Delete Candidate"
+            >
+              <ApperIcon name="Trash2" size={14} />
+            </button>
           </div>
         </div>
       </CardContent>
