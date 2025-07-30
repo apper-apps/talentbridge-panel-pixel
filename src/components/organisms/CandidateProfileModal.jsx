@@ -485,14 +485,22 @@ return (
                   <Button 
                     type="button" 
                     variant="ghost" 
-                    onClick={async () => {
-if (confirm('Are you sure you want to delete this candidate? This action cannot be undone.')) {
+onClick={async () => {
+                      // Validate candidate and ID before deletion
+                      if (!candidate || !candidate.Id) {
+                        toast.error('Invalid candidate data - cannot delete');
+                        return;
+                      }
+
+                      if (confirm('Are you sure you want to delete this candidate? This action cannot be undone.')) {
                         setIsDeleting(true);
                         try {
-                          await onDelete(parseInt(candidate.Id));
+                          // Pass the raw ID - the service handles parsing and validation
+                          await onDelete(candidate.Id);
                           toast.success('Candidate deleted successfully!');
                           onClose();
                         } catch (error) {
+                          console.error('Delete error:', error);
                           toast.error(error.message || 'Failed to delete candidate');
                         } finally {
                           setIsDeleting(false);
