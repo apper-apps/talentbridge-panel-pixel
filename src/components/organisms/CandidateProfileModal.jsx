@@ -519,7 +519,7 @@ return (
                     className="flex items-center gap-2">
                     {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
                     {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
-                  </Button>
+</Button>
                 )}
 </div>
             </div>
