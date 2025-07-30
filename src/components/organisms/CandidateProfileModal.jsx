@@ -415,9 +415,10 @@ return (
                       entityId={candidate.Id}
                       entityName={candidate.name}
                     />
-                  </div>
-                )}
 </div>
+                )}
+              </div>
+            </form>
 
             {/* Application Status Management */}
             {(mode === "view" || mode === "edit") && candidate && (
@@ -474,7 +475,7 @@ return (
                     )}
                   </div>
                 )}
-</div>
+              </div>
             )}
 
             {/* Footer */}
@@ -519,11 +520,10 @@ return (
                     className="flex items-center gap-2">
                     {isSubmitting && <ApperIcon name="Loader2" size={16} className="animate-spin" />}
                     {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
-</Button>
+                  </Button>
                 )}
-</div>
+              </div>
             </div>
-            </form>
             </motion.div>
           </motion.div>
         </AnimatePresence>
