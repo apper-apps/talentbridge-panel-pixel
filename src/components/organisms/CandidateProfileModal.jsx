@@ -486,10 +486,10 @@ return (
                     type="button" 
                     variant="ghost" 
                     onClick={async () => {
-                      if (confirm('Are you sure you want to delete this candidate? This action cannot be undone.')) {
+if (confirm('Are you sure you want to delete this candidate? This action cannot be undone.')) {
                         setIsDeleting(true);
                         try {
-                          await onDelete(candidate.Id);
+                          await onDelete(parseInt(candidate.Id));
                           toast.success('Candidate deleted successfully!');
                           onClose();
                         } catch (error) {
