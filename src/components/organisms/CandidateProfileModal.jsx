@@ -417,8 +417,7 @@ return (
                     />
                   </div>
                 )}
-              </div>
-            </form>
+</div>
 
             {/* Application Status Management */}
             {(mode === "view" || mode === "edit") && candidate && (
@@ -475,10 +474,10 @@ return (
                     )}
                   </div>
                 )}
-              </div>
+</div>
             )}
 
-{/* Footer */}
+            {/* Footer */}
             <div className="flex items-center justify-between p-6 border-t bg-gray-50">
               <div>
                 {(mode === "view" || mode === "edit") && candidate && onDelete && (
@@ -522,8 +521,9 @@ return (
                     {isSubmitting ? (mode === "add" ? "Adding..." : "Updating...") : (mode === "add" ? "Add Candidate" : "Update Candidate")}
                   </Button>
                 )}
-              </div>
+</div>
             </div>
+            </form>
             </motion.div>
           </motion.div>
         </AnimatePresence>
