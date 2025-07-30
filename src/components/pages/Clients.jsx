@@ -90,8 +90,8 @@ async function handleDeleteClient(client) {
     }
   }
 
-  const filteredClients = clients.filter(client => {
-    const searchLower = searchTerm.toLowerCase()
+const filteredClients = clients.filter(client => {
+    const searchLower = String(searchTerm || '').toLowerCase()
     const matchesSearch = client.companyName.toLowerCase().includes(searchLower) ||
                          client.contactPerson.toLowerCase().includes(searchLower) ||
                          client.email.toLowerCase().includes(searchLower)
