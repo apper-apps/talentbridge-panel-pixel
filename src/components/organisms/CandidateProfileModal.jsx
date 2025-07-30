@@ -272,10 +272,10 @@ return (
                     onClick={onClose}
                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                     <ApperIcon name="X" size={24} />
-                </button>
+</button>
             </div>
 <form id="candidate-form" onSubmit={handleSubmit}>
-              <div className="overflow-y-auto max-h-[calc(90vh-200px)] p-6 space-y-6">
+              <div className="overflow-y-auto max-h-[calc(90vh-280px)] p-6 space-y-6">
                 {/* Basic Information */}
                 <div>
                   <h3 className="text-lg font-semibold font-display text-gray-900 mb-4">Basic Information</h3>
